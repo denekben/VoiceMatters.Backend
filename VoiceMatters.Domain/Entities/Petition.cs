@@ -1,0 +1,81 @@
+﻿using VoiceMatters.Domain.Entities.Pivots;
+using VoiceMatters.Shared.Exceptions;
+
+namespace VoiceMatters.Domain.Entities
+{
+    public sealed class Petition
+    {
+        private const int _minTitleLength = 10;
+        private const int _maxTitleLength = 200;
+        private const int _minTextPayloadLength = 200;
+        private const int _maxTextPayloadLength = 2000;
+
+        public Guid Id { get; private set; }
+        public string Title { get; private set; }
+        public string TextPayload { get; private set; }
+        public uint SignQuantity { get; set; }
+        public uint SignQuantityPerDay { get; set; }
+        public bool IsCompleted { get; set; }
+        public DateTime? CompletedDate { get; set; }
+        public bool IsBlocked { get; set; }
+        public DateTime CreatedDate { get; private set; }
+        public DateTime? UpdatedDate { get; set; }
+
+        public Guid? CreatorId { get; private set; }
+        public AppUser Creator { get; set; }
+        public List<PetitionTag> PetitionTags { get; set; } = [];
+        public List<Tag> Tags { get; set; } = [];
+        public List<Image> Images { get; set; } = [];
+        public List<AppUserSignedPetition> SignedUsers { get; private set; } = [];
+        public News? News { get; private set; }
+
+        private Petition()
+        {
+
+        }
+
+        private Petition(string title, string textPayload, Guid creatorId)
+        {
+            Id = Guid.NewGuid();
+            Title = title;
+            TextPayload = textPayload;
+            SignQuantity = 0;
+            SignQuantityPerDay = 0;
+
+            CreatedDate = DateTime.UtcNow;
+            CreatorId = creatorId;
+        }
+
+        private Petition(Guid id, string title, string textPayload, Guid creatorId)
+        {
+            Id = id;
+            Title = title;
+            TextPayload = textPayload;
+            SignQuantity = 0;
+            SignQuantityPerDay = 0;
+
+            CreatedDate = DateTime.UtcNow;
+            CreatorId = creatorId;
+        }
+
+        public static Petition Create(string title, string textPayload, Guid creatorId)
+        {
+            if (string.IsNullOrWhiteSpace(title) || title.Length < _minTitleLength || title.Length > _maxTitleLength)
+                throw new InvalidArgumentDomainException($"Invalid argument for Petition[title]. Entered value: {title}");
+            if (string.IsNullOrWhiteSpace(textPayload) || textPayload.Length < _minTextPayloadLength || textPayload.Length > _maxTextPayloadLength)
+                throw new InvalidArgumentDomainException($"Invalid argument for Petition[title]. Entered value: {textPayload}");
+            return new(title, textPayload, creatorId);
+        }
+
+        public static Petition Create(Guid id, string title, string textPayload, Guid creatorId)
+        {
+            if(id == Guid.Empty)
+                throw new InvalidArgumentDomainException($"Invalid argument for Petition[id]. Entered value: {id}");
+            if (string.IsNullOrWhiteSpace(title) || title.Length < _minTitleLength || title.Length > _maxTitleLength)
+                throw new InvalidArgumentDomainException($"Invalid argument for Petition[title]. Entered value: {title}");
+            if (string.IsNullOrWhiteSpace(textPayload) || textPayload.Length < _minTextPayloadLength || textPayload.Length > _maxTextPayloadLength)
+                throw new InvalidArgumentDomainException($"Invalid argument for Petition[title]. Entered value: {textPayload}");
+            return new(title, textPayload, creatorId);
+        }
+    }
+}
