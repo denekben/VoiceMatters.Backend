@@ -1,0 +1,6 @@
+@VoiceMatters.WebUI_HostAddress = http://localhost:5175
+
+GET {{VoiceMatters.WebUI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
