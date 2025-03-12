@@ -3,15 +3,21 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.9.34723.18
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VoiceMatters.Application", "VoiceMatters.Application\VoiceMatters.Application.csproj", "{37D90B83-9F78-4CD9-8787-FA641573B41F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VoiceMatters.Application", "src\VoiceMatters.Application\VoiceMatters.Application.csproj", "{37D90B83-9F78-4CD9-8787-FA641573B41F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VoiceMatters.Domain", "VoiceMatters.Domain\VoiceMatters.Domain.csproj", "{E27FDDD3-BA47-4E00-A81B-7B4CCB12C146}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VoiceMatters.Domain", "src\VoiceMatters.Domain\VoiceMatters.Domain.csproj", "{E27FDDD3-BA47-4E00-A81B-7B4CCB12C146}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VoiceMatters.Infrastructure", "VoiceMatters.Infrastructure\VoiceMatters.Infrastructure.csproj", "{4AE81017-0BC0-4D1D-B0A0-3F67591E095E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VoiceMatters.Infrastructure", "src\VoiceMatters.Infrastructure\VoiceMatters.Infrastructure.csproj", "{4AE81017-0BC0-4D1D-B0A0-3F67591E095E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VoiceMatters.Shared", "VoiceMatters.Shared\VoiceMatters.Shared.csproj", "{F96C5827-7FBD-47B6-8A65-68197841D267}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VoiceMatters.Shared", "src\VoiceMatters.Shared\VoiceMatters.Shared.csproj", "{F96C5827-7FBD-47B6-8A65-68197841D267}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VoiceMatters.WebUI", "VoiceMatters.WebUI\VoiceMatters.WebUI.csproj", "{0DB730F9-1DE3-4FC5-8576-02EC83CC40F0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VoiceMatters.WebUI", "src\VoiceMatters.WebUI\VoiceMatters.WebUI.csproj", "{0DB730F9-1DE3-4FC5-8576-02EC83CC40F0}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{36D591C7-65C7-A0D1-1CBC-10CDE441BDC8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{8DB5D2AD-0ADB-4D5C-ABC0-D387535BE5BE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VoiceMatters.Application.Tests", "tests\VoiceMatters.Application\VoiceMatters.Application.Tests.csproj", "{0662DBD5-664D-4A71-B66F-75BCB008E115}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,9 +45,21 @@ Global
 		{0DB730F9-1DE3-4FC5-8576-02EC83CC40F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0DB730F9-1DE3-4FC5-8576-02EC83CC40F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0DB730F9-1DE3-4FC5-8576-02EC83CC40F0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0662DBD5-664D-4A71-B66F-75BCB008E115}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0662DBD5-664D-4A71-B66F-75BCB008E115}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0662DBD5-664D-4A71-B66F-75BCB008E115}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0662DBD5-664D-4A71-B66F-75BCB008E115}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{37D90B83-9F78-4CD9-8787-FA641573B41F} = {36D591C7-65C7-A0D1-1CBC-10CDE441BDC8}
+		{E27FDDD3-BA47-4E00-A81B-7B4CCB12C146} = {36D591C7-65C7-A0D1-1CBC-10CDE441BDC8}
+		{4AE81017-0BC0-4D1D-B0A0-3F67591E095E} = {36D591C7-65C7-A0D1-1CBC-10CDE441BDC8}
+		{F96C5827-7FBD-47B6-8A65-68197841D267} = {36D591C7-65C7-A0D1-1CBC-10CDE441BDC8}
+		{0DB730F9-1DE3-4FC5-8576-02EC83CC40F0} = {36D591C7-65C7-A0D1-1CBC-10CDE441BDC8}
+		{0662DBD5-664D-4A71-B66F-75BCB008E115} = {8DB5D2AD-0ADB-4D5C-ABC0-D387535BE5BE}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {3400FDB5-754F-4216-A22D-60A69B40E694}
