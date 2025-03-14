@@ -47,6 +47,21 @@ namespace VoiceMatters.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Tags",
+                schema: "VoiceMatters",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    UpdatedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Tags", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Users",
                 schema: "VoiceMatters",
                 columns: table => new
@@ -61,7 +76,7 @@ namespace VoiceMatters.Infrastructure.Migrations
                     Sex = table.Column<string>(type: "text", nullable: true),
                     ImageUuid = table.Column<string>(type: "text", nullable: true),
                     IsBlocked = table.Column<bool>(type: "boolean", nullable: false),
-                    RefreshToken = table.Column<string>(type: "text", nullable: false),
+                    RefreshToken = table.Column<string>(type: "text", nullable: true),
                     RefreshTokenExpires = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     UpdatedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
@@ -143,7 +158,7 @@ namespace VoiceMatters.Infrastructure.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Uuid = table.Column<string>(type: "text", nullable: false),
-                    Caption = table.Column<string>(type: "text", nullable: false),
+                    Caption = table.Column<string>(type: "text", nullable: true),
                     Order = table.Column<long>(type: "bigint", nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     UpdatedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
@@ -185,38 +200,17 @@ namespace VoiceMatters.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Tags",
-                schema: "VoiceMatters",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: false),
-                    CreatedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    UpdatedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
-                    PetitionId = table.Column<Guid>(type: "uuid", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Tags", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Tags_Petitions_PetitionId",
-                        column: x => x.PetitionId,
-                        principalSchema: "VoiceMatters",
-                        principalTable: "Petitions",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
                 name: "PostTags",
                 schema: "VoiceMatters",
                 columns: table => new
                 {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
                     PetitionId = table.Column<Guid>(type: "uuid", nullable: false),
                     TagId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_PostTags", x => new { x.PetitionId, x.TagId });
+                    table.PrimaryKey("PK_PostTags", x => x.Id);
                     table.ForeignKey(
                         name: "FK_PostTags_Petitions_PetitionId",
                         column: x => x.PetitionId,
@@ -239,15 +233,15 @@ namespace VoiceMatters.Infrastructure.Migrations
                 columns: new[] { "Id", "CreatedDate", "RoleName", "UpdatedDate" },
                 values: new object[,]
                 {
-                    { new Guid("20733a51-f270-4849-9b95-b2b61d0db7f8"), new DateTime(2025, 3, 10, 13, 48, 17, 284, DateTimeKind.Utc).AddTicks(2271), "User", null },
-                    { new Guid("6a04b26c-f4d1-4033-a9ef-0fbef464e91b"), new DateTime(2025, 3, 10, 13, 48, 17, 284, DateTimeKind.Utc).AddTicks(1927), "Admin", null }
+                    { new Guid("8b2a0625-eaa7-4b6c-b3db-e0ed0e2d3eae"), new DateTime(2025, 3, 13, 23, 23, 56, 549, DateTimeKind.Utc).AddTicks(7110), "Admin", null },
+                    { new Guid("f180d00d-8663-476b-b3e2-fd7b52e49c1c"), new DateTime(2025, 3, 13, 23, 23, 56, 549, DateTimeKind.Utc).AddTicks(7488), "User", null }
                 });
 
             migrationBuilder.InsertData(
                 schema: "VoiceMatters",
                 table: "Statistics",
                 columns: new[] { "Id", "PetitionQuantity", "SignsQuantity", "UserQuantity" },
-                values: new object[] { new Guid("cc15a4d9-2d26-4d30-bbca-38ce50abb8ed"), 0, 0, 0 });
+                values: new object[] { new Guid("776845be-ce6b-45ef-9be8-c2b4c8807a2f"), 0, 0, 0 });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AppUserSignedPetitions_SignerId",
@@ -275,16 +269,16 @@ namespace VoiceMatters.Infrastructure.Migrations
                 column: "CreatorId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_PostTags_PetitionId",
+                schema: "VoiceMatters",
+                table: "PostTags",
+                column: "PetitionId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_PostTags_TagId",
                 schema: "VoiceMatters",
                 table: "PostTags",
                 column: "TagId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Tags_PetitionId",
-                schema: "VoiceMatters",
-                table: "Tags",
-                column: "PetitionId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Users_RoleId",
@@ -317,11 +311,11 @@ namespace VoiceMatters.Infrastructure.Migrations
                 schema: "VoiceMatters");
 
             migrationBuilder.DropTable(
-                name: "Tags",
+                name: "Petitions",
                 schema: "VoiceMatters");
 
             migrationBuilder.DropTable(
-                name: "Petitions",
+                name: "Tags",
                 schema: "VoiceMatters");
 
             migrationBuilder.DropTable(

@@ -1,16 +1,17 @@
-﻿using VoiceMatters.Application.Services;
-using VoiceMatters.Infrastructure.Data;
-using VoiceMatters.Infrastructure.Services;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using System.Reflection;
+using VoiceMatters.Application.Services;
 using VoiceMatters.Domain.Repositories;
-using VoiceMatters.Infrastructure.Repositories;
-using VoiceMatters.Infrastructure.Hubs;
 using VoiceMatters.Infrastructure.BackgroundServices;
-
+using VoiceMatters.Infrastructure.Data;
+using VoiceMatters.Infrastructure.Hubs;
+using VoiceMatters.Infrastructure.Repositories;
+using VoiceMatters.Infrastructure.Services;
 
 namespace VoiceMatters.Infrastructure
 {
@@ -36,6 +37,9 @@ namespace VoiceMatters.Infrastructure
             services.AddHttpClient();
 
             services.AddHostedService<DailySignsRefreshService>();
+
+            services.AddMediatR(cfg =>
+                cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
 
             services.AddDbContext<AppDbContext>(
                 options => options.UseNpgsql(configuration["ConnectionString:DefaultConntection"])
@@ -68,6 +72,13 @@ namespace VoiceMatters.Infrastructure
             });
 
             return services;
+        }
+
+        public static WebApplication UseInfrastructure(this WebApplication app)
+        {
+            app.MapHub<VoiceMattersHub>("voice-matters-hub");
+
+            return app;
         }
     }
 }

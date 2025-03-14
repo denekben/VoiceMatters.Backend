@@ -3,7 +3,7 @@
     public sealed record ImageDto(
         Guid Id,
         string Uuid,
-        string Caption,
+        string? Caption,
         uint Order
     );
 }

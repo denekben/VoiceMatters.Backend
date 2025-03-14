@@ -1,9 +1,8 @@
-﻿using VoiceMatters.Application.Services;
-using VoiceMatters.Shared.DTOs;
-using MediatR;
+﻿using MediatR;
 using Microsoft.Extensions.Logging;
+using VoiceMatters.Application.Services;
 using VoiceMatters.Domain.Repositories;
-using VoiceMatters.Shared.Exceptions;
+using VoiceMatters.Shared.DTOs;
 
 namespace VoiceMatters.Application.UseCases.Identity.Commands.Handlers
 {
@@ -34,10 +33,8 @@ namespace VoiceMatters.Application.UseCases.Identity.Commands.Handlers
 
             await _authService.UpdateRefreshToken(email, refreshToken);
 
-            var role = await _roleRepository.GetAsync(user.Id)
-                ?? throw new BadRequestException($"Cannot find role for user {user.Id}");
 
-            string accessToken = _tokenService.GenerateAccessToken(user.Id, user.LastName, email, role.RoleName)
+            string accessToken = _tokenService.GenerateAccessToken(user.Id, user.LastName, email, user.Role.RoleName)
                 ?? throw new InvalidOperationException("Cannot create access token");
 
             _logger.LogInformation($"User {email} signed in");

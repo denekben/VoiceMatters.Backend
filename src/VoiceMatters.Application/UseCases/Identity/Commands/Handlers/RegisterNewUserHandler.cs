@@ -42,9 +42,9 @@ namespace VoiceMatters.Application.UseCases.Identity.Commands.Handlers
 
             var imageURL = await _imageService.UploadFileAsync(image);
 
-            var user = await _authService.CreateUserAsync(firstName, lastName, phone, email, hashedPassword, dateOfBirth, sex, imageURL, role.Id);
-
             var refreshToken = _tokenService.GenerateRefreshToken();
+
+            var user = await _authService.CreateUserAsync(firstName, lastName, phone, email, hashedPassword, dateOfBirth, sex, imageURL, role.Id);
 
             await _authService.UpdateRefreshToken(email, refreshToken);
             var accessToken = _tokenService.GenerateAccessToken(user.Id, lastName, email, Role.User.RoleName)

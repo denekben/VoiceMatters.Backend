@@ -5,7 +5,7 @@ namespace VoiceMatters.Domain.Repositories
     public interface IPetitionRepository
     {
         Task<Petition?> GetAsync(Guid id);
-        Task<Petition?> GetAsync(Guid id, PetitionIncludes petitionIncludes);
+        Task<Petition?> GetAsync(Guid id, PetitionIncludes petitionIncludes, TrackingType trackingType = TrackingType.Tracking);
         Task DeleteAsync(Petition petition);
         Task UpdateAsync(Petition petition);
         Task AddAsync(Petition petition);
@@ -15,7 +15,12 @@ namespace VoiceMatters.Domain.Repositories
     public enum PetitionIncludes
     {
         Tags,
-        PetitionTags,
         Images
+    }
+
+    public enum TrackingType
+    {
+        NoTracking,
+        Tracking
     }
 }

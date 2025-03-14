@@ -36,6 +36,8 @@ namespace VoiceMatters.Application.UseCases.Petitions.Commands.Handlers
             petition.IsCompleted = true;
             petition.CompletedDate = DateTime.UtcNow;
 
+            await _petitionRepository.UpdateAsync(petition);
+
             _logger.LogInformation($"Petition {petition.Id} completed");
         }
     }

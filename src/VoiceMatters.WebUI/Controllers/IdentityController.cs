@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using VoiceMatters.Application.UseCases.Identity.Commands;
 using VoiceMatters.Shared.DTOs;
@@ -30,6 +31,7 @@ namespace VoiceMatters.WebUI.Controllers
             return Ok(tokens);
         }
 
+        [Authorize(Policy = "IsNotBlocked")]
         [HttpPost("refresh-token")]
         public async Task<ActionResult<string?>> RefreshExpiredToken([FromBody] RefreshExpiredToken command)
         {

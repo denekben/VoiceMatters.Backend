@@ -20,6 +20,8 @@ namespace VoiceMatters.WebUI.Controllers
         public async Task<ActionResult<Statistic?>> GetStatistic()
         {
             var statistic = await _sender.Send(new GetStatistic());
+            if (statistic == null)
+                return NotFound();
             return Ok(statistic);
         }
     }

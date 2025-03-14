@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using VoiceMatters.Application.UseCases.Petitions.Commands;
 using VoiceMatters.Application.UseCases.Petitions.Queries;
@@ -19,6 +20,7 @@ namespace VoiceMatters.WebUI.Controllers
         }
 
         [HttpPost("{id}/complete")]
+        [Authorize(Policy = "IsNotBlocked")]
         public async Task<IActionResult> CompletePetition([FromRoute] Guid id)
         {
             await _sender.Send(new CompletePetition(id));
@@ -26,6 +28,7 @@ namespace VoiceMatters.WebUI.Controllers
         }
 
         [HttpPost]
+        [Authorize(Policy = "IsNotBlocked")]
         public async Task<ActionResult<PetitionDto?>> CreatePetition([FromForm] CreatePetition command)
         {
             var result = await _sender.Send(command);
@@ -33,6 +36,7 @@ namespace VoiceMatters.WebUI.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Policy = "IsNotBlocked")]
         public async Task<IActionResult> DeletePetition([FromRoute] Guid id)
         {
             await _sender.Send(new DeletePetition(id));
@@ -40,6 +44,7 @@ namespace VoiceMatters.WebUI.Controllers
         }
 
         [HttpPost("{id}/sign")]
+        [Authorize(Policy = "IsNotBlocked")]
         public async Task<IActionResult> SignPetition([FromRoute] Guid id)
         {
             await _sender.Send(new SignPetition(id));
@@ -47,6 +52,7 @@ namespace VoiceMatters.WebUI.Controllers
         }
 
         [HttpPut]
+        [Authorize(Policy = "IsNotBlocked")]
         public async Task<ActionResult<PetitionDto?>> UpdatePetition([FromForm] UpdatePetition command)
         {
             var result = await _sender.Send(command);
@@ -54,10 +60,13 @@ namespace VoiceMatters.WebUI.Controllers
         }
 
         [HttpGet("my")]
+        [Authorize(Policy = "IsNotBlocked")]
         public async Task<ActionResult<List<PetitionDto>?>> GetCurrentUserPetitions(
             [FromQuery] GetCurrentUserPetitions query)
         {
             var result = await _sender.Send(query);
+            if (result == null)
+                return NotFound();
             return Ok(result);
         }
 
@@ -65,6 +74,8 @@ namespace VoiceMatters.WebUI.Controllers
         public async Task<ActionResult<PetitionDto?>> GetPetition([FromRoute] Guid id)
         {
             var result = await _sender.Send(new GetPetition(id));
+            if (result == null)
+                return NotFound();
             return Ok(result);
         }
 
@@ -73,6 +84,8 @@ namespace VoiceMatters.WebUI.Controllers
             [FromQuery] GetPetitions query)
         {
             var result = await _sender.Send(query);
+            if (result == null)
+                return NotFound();
             return Ok(result);
         }
 
@@ -81,6 +94,8 @@ namespace VoiceMatters.WebUI.Controllers
             [FromQuery] GetUserPlatesByPetitionId query)
         {
             var plates = await _sender.Send(query);
+            if (plates == null)
+                return NotFound();
             return Ok(plates);
         }
     }

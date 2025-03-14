@@ -28,25 +28,27 @@ namespace VoiceMatters.Infrastructure.Repositories
 
         public async Task<Petition?> GetAsync(Guid id)
         {
-            return await _context.Petitions.FirstOrDefaultAsync(p=>p.Id == id);
+            return await _context.Petitions.FirstOrDefaultAsync(p => p.Id == id);
         }
 
-        public async Task<Petition?> GetAsync(Guid id, PetitionIncludes petitionIncludes)
+        public async Task<Petition?> GetAsync(Guid id, PetitionIncludes petitionIncludes, TrackingType trType)
         {
-            var query = _context.Petitions.Where(p=>p.Id == id);
+            var query = _context.Petitions.Where(p => p.Id == id);
 
-            if (petitionIncludes == PetitionIncludes.Tags)
-                query = query.Include(p => p.Tags);
-            if (petitionIncludes == PetitionIncludes.Images)
+            if (trType == TrackingType.NoTracking)
+                query = query.AsNoTracking();
+
+            if (petitionIncludes.HasFlag(PetitionIncludes.Tags))
+                query = query.Include(p => p.PetitionTags).ThenInclude(pt => pt.Tag);
+            if (petitionIncludes.HasFlag(PetitionIncludes.Images))
                 query = query.Include(p => p.Images);
-            if (petitionIncludes == PetitionIncludes.PetitionTags)
-                query = query.Include(p => p.PetitionTags);
 
             return await query.FirstOrDefaultAsync();
         }
 
         public async Task UpdateAsync(Petition petition)
         {
+            petition.UpdatedDate = DateTime.UtcNow;
             _context.Petitions.Update(petition);
             await _context.SaveChangesAsync();
         }

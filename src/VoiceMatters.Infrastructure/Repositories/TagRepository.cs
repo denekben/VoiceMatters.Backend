@@ -16,7 +16,7 @@ namespace VoiceMatters.Infrastructure.Repositories
 
         public async Task<Tag?> GetTagByNameAsync(string tagName)
         {
-            return await _context.Tags.FirstOrDefaultAsync(t=>t.Name == tagName);
+            return await _context.Tags.FirstOrDefaultAsync(t => t.Name == tagName);
         }
     }
 }

@@ -49,22 +49,22 @@ namespace VoiceMatters.Application.UseCases.Petitions.Commands.Handlers
             var petition = Petition.Create(title, textPayload, creatorId)
                 ?? throw new BadRequestException("Cannot create petition");
 
-            foreach(var tagName in tags)
+            foreach (var tagName in tags)
             {
                 var tag = await _tagRepository.GetTagByNameAsync(tagName);
-                if(tag == null)
+                if (tag == null)
                 {
                     tag = Tag.Create(tagName)
                         ?? throw new BadRequestException($"Cannot create tag {tagName}");
                 }
-                petition.Tags.Add(tag);
 
                 var petitionTag = PetitionTag.Create(petition.Id, tag.Id)
                     ?? throw new BadRequestException("Cannot create PetitionTag");
+                petitionTag.Tag = tag;
                 petition.PetitionTags.Add(petitionTag);
             }
 
-            foreach(var image in images)
+            foreach (var image in images)
             {
                 var imageURL = await _imageService.UploadFileAsync(image.File)
                     ?? throw new BadRequestException("Cannot create imageURL");
@@ -88,8 +88,10 @@ namespace VoiceMatters.Application.UseCases.Petitions.Commands.Handlers
             if (stats != null)
             {
                 stats.Update(StatParameter.PetitionQuantity);
+                stats.Update(StatParameter.SignsQuantity);
                 await _statisticRepository.UpdateAsync(stats);
                 await _notifications.PetitionCreated();
+                await _notifications.PetitionSigned();
             }
 
             return petition.AsDto(true);

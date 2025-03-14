@@ -27,7 +27,7 @@ namespace VoiceMatters.Infrastructure.Queries.News
 
             news = news
                 .Include(n => n.Petition)
-                .ThenInclude(p => p.Tags)
+                .ThenInclude(p => p.PetitionTags).ThenInclude(pt => pt.Tag)
                 .Include(n => n.Petition)
                 .ThenInclude(p => p.Images);
 
@@ -58,7 +58,7 @@ namespace VoiceMatters.Infrastructure.Queries.News
                 news = news.OrderBy(n => n.Petition.CompletedDate);
             }
 
-            return await news.Select(n=>n.AsDto()).ToListAsync();
+            return await news.Select(n => n.AsDto()).ToListAsync();
         }
     }
 }

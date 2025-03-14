@@ -12,7 +12,7 @@ using VoiceMatters.Infrastructure.Data;
 namespace VoiceMatters.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250310134817_Init")]
+    [Migration("20250313232357_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -64,7 +64,6 @@ namespace VoiceMatters.Infrastructure.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("RefreshToken")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<DateTime>("RefreshTokenExpires")
@@ -93,7 +92,6 @@ namespace VoiceMatters.Infrastructure.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("Caption")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<DateTime>("CreatedDate")
@@ -211,13 +209,19 @@ namespace VoiceMatters.Infrastructure.Migrations
 
             modelBuilder.Entity("VoiceMatters.Domain.Entities.Pivots.PetitionTag", b =>
                 {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
                     b.Property<Guid>("PetitionId")
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("TagId")
                         .HasColumnType("uuid");
 
-                    b.HasKey("PetitionId", "TagId");
+                    b.HasKey("Id");
+
+                    b.HasIndex("PetitionId");
 
                     b.HasIndex("TagId");
 
@@ -247,14 +251,14 @@ namespace VoiceMatters.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("6a04b26c-f4d1-4033-a9ef-0fbef464e91b"),
-                            CreatedDate = new DateTime(2025, 3, 10, 13, 48, 17, 284, DateTimeKind.Utc).AddTicks(1927),
+                            Id = new Guid("8b2a0625-eaa7-4b6c-b3db-e0ed0e2d3eae"),
+                            CreatedDate = new DateTime(2025, 3, 13, 23, 23, 56, 549, DateTimeKind.Utc).AddTicks(7110),
                             RoleName = "Admin"
                         },
                         new
                         {
-                            Id = new Guid("20733a51-f270-4849-9b95-b2b61d0db7f8"),
-                            CreatedDate = new DateTime(2025, 3, 10, 13, 48, 17, 284, DateTimeKind.Utc).AddTicks(2271),
+                            Id = new Guid("f180d00d-8663-476b-b3e2-fd7b52e49c1c"),
+                            CreatedDate = new DateTime(2025, 3, 13, 23, 23, 56, 549, DateTimeKind.Utc).AddTicks(7488),
                             RoleName = "User"
                         });
                 });
@@ -281,7 +285,7 @@ namespace VoiceMatters.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("cc15a4d9-2d26-4d30-bbca-38ce50abb8ed"),
+                            Id = new Guid("776845be-ce6b-45ef-9be8-c2b4c8807a2f"),
                             PetitionQuantity = 0,
                             SignsQuantity = 0,
                             UserQuantity = 0
@@ -301,15 +305,10 @@ namespace VoiceMatters.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid?>("PetitionId")
-                        .HasColumnType("uuid");
-
                     b.Property<DateTime?>("UpdatedDate")
                         .HasColumnType("timestamp without time zone");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("PetitionId");
 
                     b.ToTable("Tags", "VoiceMatters");
                 });
@@ -385,7 +384,7 @@ namespace VoiceMatters.Infrastructure.Migrations
                         .IsRequired();
 
                     b.HasOne("VoiceMatters.Domain.Entities.Tag", "Tag")
-                        .WithMany("Petitions")
+                        .WithMany("PetitionTags")
                         .HasForeignKey("TagId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -393,13 +392,6 @@ namespace VoiceMatters.Infrastructure.Migrations
                     b.Navigation("Petition");
 
                     b.Navigation("Tag");
-                });
-
-            modelBuilder.Entity("VoiceMatters.Domain.Entities.Tag", b =>
-                {
-                    b.HasOne("VoiceMatters.Domain.Entities.Petition", null)
-                        .WithMany("Tags")
-                        .HasForeignKey("PetitionId");
                 });
 
             modelBuilder.Entity("VoiceMatters.Domain.Entities.AppUser", b =>
@@ -418,8 +410,6 @@ namespace VoiceMatters.Infrastructure.Migrations
                     b.Navigation("PetitionTags");
 
                     b.Navigation("SignedUsers");
-
-                    b.Navigation("Tags");
                 });
 
             modelBuilder.Entity("VoiceMatters.Domain.Entities.Role", b =>
@@ -429,7 +419,7 @@ namespace VoiceMatters.Infrastructure.Migrations
 
             modelBuilder.Entity("VoiceMatters.Domain.Entities.Tag", b =>
                 {
-                    b.Navigation("Petitions");
+                    b.Navigation("PetitionTags");
                 });
 #pragma warning restore 612, 618
         }

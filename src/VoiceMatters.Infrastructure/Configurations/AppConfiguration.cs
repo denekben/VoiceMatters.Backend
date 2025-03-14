@@ -1,14 +1,14 @@
-﻿using VoiceMatters.Domain.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using VoiceMatters.Domain.Entities;
 using VoiceMatters.Domain.Entities.Pivots;
 using VoiceMatters.Infrastructure.Data;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace VoiceMatters.Infrastructure.Configurations
 {
     public class AppConfiguration : IEntityTypeConfiguration<Role>, IEntityTypeConfiguration<AppUser>,
-        IEntityTypeConfiguration<AppUserSignedPetition>, IEntityTypeConfiguration<PetitionTag>, IEntityTypeConfiguration<Image>, 
-        IEntityTypeConfiguration<News>, IEntityTypeConfiguration<Petition>, IEntityTypeConfiguration<Statistic>, 
+        IEntityTypeConfiguration<AppUserSignedPetition>, IEntityTypeConfiguration<PetitionTag>, IEntityTypeConfiguration<Image>,
+        IEntityTypeConfiguration<News>, IEntityTypeConfiguration<Petition>, IEntityTypeConfiguration<Statistic>,
         IEntityTypeConfiguration<Tag>
     {
         public void Configure(EntityTypeBuilder<Role> builder)
@@ -53,7 +53,7 @@ namespace VoiceMatters.Infrastructure.Configurations
         }
         public void Configure(EntityTypeBuilder<PetitionTag> builder)
         {
-            builder.HasKey(pt => new { pt.PetitionId, pt.TagId});
+            builder.HasKey(pt => pt.Id);
 
             builder
                 .HasOne(pt => pt.Petition)
@@ -63,12 +63,13 @@ namespace VoiceMatters.Infrastructure.Configurations
 
             builder
                 .HasOne(pt => pt.Tag)
-                .WithMany(t => t.Petitions)
+                .WithMany(t => t.PetitionTags)
                 .HasForeignKey(pt => pt.TagId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             builder.ToTable("PostTags");
         }
+
         public void Configure(EntityTypeBuilder<Image> builder)
         {
             builder.HasKey(i => i.Id);

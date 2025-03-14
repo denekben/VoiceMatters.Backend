@@ -2,6 +2,7 @@
 {
     public sealed class PetitionTag
     {
+        public Guid Id { get; private set; }
         public Guid PetitionId { get; set; }
         public Guid TagId { get; set; }
         public Petition Petition { get; set; }
@@ -14,6 +15,7 @@
 
         public PetitionTag(Guid petitionId, Guid tagId)
         {
+            Id = Guid.NewGuid();
             PetitionId = petitionId;
             TagId = tagId;
         }

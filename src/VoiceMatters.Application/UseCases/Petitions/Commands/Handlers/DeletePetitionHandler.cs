@@ -39,18 +39,18 @@ namespace VoiceMatters.Application.UseCases.Petitions.Commands.Handlers
             if (petition.CreatorId != creatorId)
                 throw new BadRequestException("Authrization error");
 
-            // deleting images
-            foreach (var images in petition.Images)
-            {
-                await _imageService.DeleteByUuidAsync(images.Uuid);
-            }
-
             var stats = await _statisticRepository.GetAsync();
             if (stats != null)
             {
                 stats.Update(StatParameter.PetitionQuantity, -1);
                 await _statisticRepository.UpdateAsync(stats);
                 await _notifications.PetitionDeleted();
+            }
+
+            // deleting images
+            foreach (var images in petition.Images)
+            {
+                await _imageService.DeleteByUuidAsync(images.Uuid);
             }
 
             await _petitionRepository.DeleteAsync(petition);

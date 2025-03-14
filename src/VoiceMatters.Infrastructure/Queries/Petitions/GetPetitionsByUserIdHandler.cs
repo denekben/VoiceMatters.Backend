@@ -32,14 +32,14 @@ namespace VoiceMatters.Infrastructure.Queries.Petitions
 
             var userPetitions = _context.Petitions.AsNoTracking().Where(p => p.CreatorId == query.CreatorId);
 
-            userPetitions = userPetitions.Where(p => EF.Functions.ILike(p.Title, $"{query.SearchPhrase ?? string.Empty}"));
+            userPetitions = userPetitions.Where(p => EF.Functions.ILike(p.Title, $"%{query.SearchPhrase ?? string.Empty}%"));
 
             int skipNumber = (query.PageNumber - 1) * query.PageSize;
             userPetitions = userPetitions.Skip(skipNumber).Take(query.PageSize);
 
             if (query.TagIds != null && query.TagIds.Count != 0)
             {
-                userPetitions = userPetitions.Include(p => p.Tags).Where(p => query.TagIds.All(tagId => p.Tags.Any(t => t.Id == tagId)));
+                userPetitions = userPetitions.Include(p => p.PetitionTags).ThenInclude(pt => pt.Tag).Where(p => query.TagIds.All(tagId => p.PetitionTags.Any(pt => pt.Tag.Id == tagId)));
             }
 
             if (query.IncludeCompleted == Sort.Enable.ToString())
@@ -84,14 +84,16 @@ namespace VoiceMatters.Infrastructure.Queries.Petitions
                 currentUser = await _context.Users.AsNoTracking().Include(u => u.PetitionsSignedByUser).FirstOrDefaultAsync(u => u.Id == currentUserId);
             }
 
-            userPetitions = userPetitions.Include(p => p.Images).Include(p => p.Tags).Include(p => p.Creator);
+            userPetitions = userPetitions.Include(p => p.Images).Include(p => p.PetitionTags).ThenInclude(pt => pt.Tag).Include(p => p.Creator).Include(p => p.News);
+
+            var signedPetitionIds = currentUser?.PetitionsSignedByUser?.Select(up => up.PetitionId).ToList() ?? new List<Guid>();
 
             return await userPetitions
                 .Select(
-                    p => p.AsDto( 
-                        currentUser != null && 
-                        currentUser.PetitionsSignedByUser != null && 
-                        currentUser.PetitionsSignedByUser.Any(up => up.PetitionId == p.Id))
+                    p => p.AsDto(
+                        currentUser != null &&
+                        currentUser.PetitionsSignedByUser != null &&
+                        signedPetitionIds.Contains(p.Id))
                 ).ToListAsync();
         }
     }

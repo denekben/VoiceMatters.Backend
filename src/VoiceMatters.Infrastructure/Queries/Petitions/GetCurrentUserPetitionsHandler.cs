@@ -23,37 +23,39 @@ namespace VoiceMatters.Infrastructure.Queries.Petitions
         public async Task<List<PetitionDto>?> Handle(GetCurrentUserPetitions query, CancellationToken cancellationToken)
         {
             var userId = _contextService.GetCurrentUserId();
-            var userPetitions = _context.Petitions.AsNoTracking().Where(p=>p.CreatorId == userId);
+            var userPetitions = _context.Petitions.AsNoTracking().Where(p => p.CreatorId == userId);
 
-            userPetitions = userPetitions.Where(p => EF.Functions.ILike(p.Title, $"{query.SearchPhrase ?? string.Empty}"));
+            userPetitions = userPetitions.Where(p => EF.Functions.ILike(p.Title, $"%{query.SearchPhrase ?? string.Empty}%"));
 
             int skipNumber = (query.PageNumber - 1) * query.PageSize;
             userPetitions = userPetitions.Skip(skipNumber).Take(query.PageSize);
 
-            if(query.TagIds != null && query.TagIds.Count != 0)
+            userPetitions = userPetitions.Include(p => p.PetitionTags).ThenInclude(pt => pt.Tag);
+
+            if (query.TagIds != null && query.TagIds.Count != 0)
             {
-                userPetitions = userPetitions.Include(p => p.Tags).Where(p => query.TagIds.All(tagId => p.Tags.Any(t => t.Id == tagId)));
+                userPetitions = userPetitions.Where(p => query.TagIds.All(tagId => p.PetitionTags.Any(pt => pt.Tag.Id == tagId)));
             }
 
-            if(query.IncludeCompleted == Sort.Enable.ToString())
+            if (query.IncludeCompleted == Sort.Enable.ToString())
             {
-                userPetitions = userPetitions.Where(p=>p.IsCompleted == true);
+                userPetitions = userPetitions.Where(p => p.IsCompleted == true);
             }
             else if (query.IncludeCompleted == Sort.Disable.ToString())
             {
-                userPetitions = userPetitions.Where(p=>p.IsCompleted == false);
+                userPetitions = userPetitions.Where(p => p.IsCompleted == false);
             }
 
-            if(query.SortBySignQuantityPerDay == Sort.Descending.ToString())
+            if (query.SortBySignQuantityPerDay == Sort.Descending.ToString())
             {
-                userPetitions = userPetitions.OrderByDescending(p=>p.SignQuantityPerDay);
+                userPetitions = userPetitions.OrderByDescending(p => p.SignQuantityPerDay);
             }
             else if (query.SortBySignQuantityPerDay == Sort.Ascending.ToString())
             {
-                userPetitions = userPetitions.OrderBy(p=>p.SignQuantityPerDay);
+                userPetitions = userPetitions.OrderBy(p => p.SignQuantityPerDay);
             }
 
-            if(query.SortBySignQuantity == Sort.Descending.ToString())
+            if (query.SortBySignQuantity == Sort.Descending.ToString())
             {
                 userPetitions = userPetitions.OrderByDescending(p => p.SignQuantity);
             }
@@ -62,7 +64,7 @@ namespace VoiceMatters.Infrastructure.Queries.Petitions
                 userPetitions = userPetitions.OrderBy(p => p.SignQuantity);
             }
 
-            if(query.SortByDate == Sort.Descending.ToString())
+            if (query.SortByDate == Sort.Descending.ToString())
             {
                 userPetitions = userPetitions.OrderByDescending(p => p.CreatedDate);
             }
@@ -71,9 +73,9 @@ namespace VoiceMatters.Infrastructure.Queries.Petitions
                 userPetitions = userPetitions.OrderBy(p => p.CreatedDate);
             }
 
-            userPetitions = userPetitions.Include(p => p.Images).Include(p => p.Tags).Include(p=>p.Creator);
+            userPetitions = userPetitions.Include(p => p.Images).Include(p => p.Creator).Include(p => p.News);
 
-            return await userPetitions.Select(p=>p.AsDto(p.CreatorId == userId)).ToListAsync();
+            return await userPetitions.Select(p => p.AsDto(p.CreatorId == userId)).ToListAsync();
         }
     }
 }
