@@ -17,7 +17,7 @@ namespace VoiceMatters.Infrastructure.BackgroundServices
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            _timer = new Timer(DoRefresh, null, TimeSpan.Zero, TimeSpan.FromMinutes(5));
+            _timer = new Timer(DoRefresh, null, TimeSpan.Zero, TimeSpan.FromHours(6));
             return Task.CompletedTask;
         }
 
