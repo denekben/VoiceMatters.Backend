@@ -7,7 +7,7 @@ namespace VoiceMatters.Application.Mappers
     {
         public static PetitionDto AsDto(this Petition petition, bool signedByCurrentUser)
         {
-            var tags = petition.Tags.Select(t => t.AsDto()).ToList();
+            var tags = petition.PetitionTags.Select(pt => pt.Tag.AsDto()).ToList();
             var images = petition.Images.Select(i => i.AsDto()).ToList();
 
             return new(
@@ -21,6 +21,7 @@ namespace VoiceMatters.Application.Mappers
                 signedByCurrentUser,
                 tags,
                 images,
+                petition.News?.Title,
                 petition.Creator.AsProfilePlateDto(),
                 petition.CreatedDate,
                 petition.UpdatedDate
@@ -40,7 +41,7 @@ namespace VoiceMatters.Application.Mappers
         public static NewsDto AsDto(this News news)
         {
             var petition = news.Petition;
-            var tags = petition.Tags.Select(t => t.AsDto()).ToList();
+            var tags = petition.PetitionTags.Select(pt => pt.Tag.AsDto()).ToList();
             var images = petition.Images.Select(i => i.AsDto()).ToList();
 
             return new(

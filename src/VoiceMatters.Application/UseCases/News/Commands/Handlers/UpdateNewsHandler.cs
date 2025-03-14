@@ -39,15 +39,16 @@ namespace VoiceMatters.Application.UseCases.News.Commands.Handlers
             if (petition.CreatorId != creatorId)
                 throw new BadRequestException($"Only petition creator can update news for this petition");
 
-            var updatedNews = DomainNews.Create(news.Id, news.Title, news.PetitionId)
+            var updatedNews = DomainNews.Create(command.Title, news.PetitionId)
                 ?? throw new BadRequestException($"Cannot update news {command.Id}");
 
-            await _newsRepository.UpdateAsync(updatedNews);
+            news.Petition = petition;
+            news.Title = command.Title;
 
-            updatedNews.Petition = petition;
+            await _newsRepository.UpdateAsync(news);
 
             _logger.LogInformation($"News {command.Id} updated");
-            return updatedNews.AsDto();
+            return news.AsDto();
         }
     }
 }

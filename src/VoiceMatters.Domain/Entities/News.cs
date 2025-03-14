@@ -30,6 +30,7 @@ namespace VoiceMatters.Domain.Entities
 
         public News(Guid id, string title, Guid petitionId)
         {
+            Id = id;
             Title = title;
             CreatedDate = DateTime.UtcNow;
             PetitionId = petitionId;

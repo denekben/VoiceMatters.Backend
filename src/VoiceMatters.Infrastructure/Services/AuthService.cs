@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 using VoiceMatters.Application.Services;
 using VoiceMatters.Domain.Entities;
 using VoiceMatters.Infrastructure.Data;
@@ -16,6 +17,7 @@ namespace VoiceMatters.Infrastructure.Services
         private readonly HashAlgorithmName _hashAlgorithm;
         private readonly double _refreshTokenLifeTime;
         private readonly AppDbContext _context;
+        private static readonly Regex _passwordPattern = new(@"^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[^a-zA-Z0-9]).{8,30}$");
 
         public AuthService(IConfiguration configuration, AppDbContext context)
         {
@@ -23,7 +25,7 @@ namespace VoiceMatters.Infrastructure.Services
 
             _context = context;
 
-            var algorithmName = HashAlgorithmName.SHA512;
+            _hashAlgorithm = HashAlgorithmName.SHA512;
             _keySize = Convert.ToInt32(configuration["Hashing:KeySize"]);
             _iterations = Convert.ToInt32(configuration["Hashing:Iterations"]);
         }
@@ -44,6 +46,11 @@ namespace VoiceMatters.Infrastructure.Services
         public async Task<AppUser> CreateUserAsync(string firstName, string lastName, string? phone,
             string email, string hashedPassword, DateTime? birthDate, string? sex, string? imageURL, Guid roleId)
         {
+            var userCheck = await _context.Users.Include(u => u.Role).FirstOrDefaultAsync(u => u.Email == email);
+
+            if (userCheck != null)
+                throw new BadRequestException($"User with email {email} already registered");
+
             var user = AppUser.Create(firstName, lastName, phone, email, hashedPassword, birthDate, sex, imageURL, roleId)
                 ?? throw new BadRequestException("Cannot create user");
 
@@ -55,14 +62,17 @@ namespace VoiceMatters.Infrastructure.Services
 
         public async Task<AppUser> GetUserByEmailAsync(string email)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email)
-                ?? throw new BadRequestException($"Cannot find user with email {email}");
+            var user = await _context.Users.Include(u => u.Role).FirstOrDefaultAsync(u => u.Email == email)
+                ?? throw new BadRequestException($"Cannot find user");
 
             return user;
         }
 
         public string HashPassword(string password)
         {
+            if (string.IsNullOrWhiteSpace(password) || !_passwordPattern.IsMatch(password) || password.Contains(' '))
+                throw new InvalidArgumentDomainException($"Invalid argument for AppUser[password]. Entered value: {password}");
+
             var salt = RandomNumberGenerator.GetBytes(_keySize);
             var hash = Rfc2898DeriveBytes.Pbkdf2(
                 Encoding.UTF8.GetBytes(password),

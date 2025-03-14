@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using VoiceMatters.Application.UseCases.Administration.Commands;
 
@@ -6,6 +7,7 @@ namespace VoiceMatters.WebUI.Controllers
 {
     [ApiController]
     [Route("api/admin")]
+    [Authorize(Roles = "Admin", Policy = "IsNotBlocked")]
     public class AdministrationController : ControllerBase
     {
         private readonly ISender _sender;

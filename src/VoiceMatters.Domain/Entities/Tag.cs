@@ -13,7 +13,7 @@ namespace VoiceMatters.Domain.Entities
         public DateTime CreatedDate { get; set; }
         public DateTime? UpdatedDate { get; set; }
 
-        public List<PetitionTag> Petitions { get; set; } = [];
+        public List<PetitionTag> PetitionTags { get; set; } = [];
 
         public Tag() { }
 

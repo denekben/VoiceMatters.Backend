@@ -18,13 +18,13 @@ namespace VoiceMatters.Infrastructure.Queries.Tags
 
         public async Task<List<TagDto>?> Handle(GetTags query, CancellationToken cancellationToken)
         {
-            var tags = _context.Tags.AsNoTracking().Where(t=>EF.Functions.ILike(t.Name, $"{query.SearchPhrase ?? string.Empty}"));
+            var tags = _context.Tags.AsNoTracking().Where(t => EF.Functions.ILike(t.Name, $"%{query.SearchPhrase ?? string.Empty}%"));
 
             int skipNumber = (query.PageNumber - 1) * query.PageSize;
 
             tags = tags.Skip(skipNumber).Take(query.PageSize);
 
-            return await tags.Select(t=>t.AsDto()).ToListAsync();
+            return await tags.Select(t => t.AsDto()).ToListAsync();
         }
     }
 }

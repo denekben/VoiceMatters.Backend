@@ -16,12 +16,17 @@ namespace VoiceMatters.Infrastructure.Repositories
 
         public async Task<Role?> GetAsync(Guid id)
         {
-            return await _context.Roles.FirstOrDefaultAsync(r=>r.Id == id);
+            return await _context.Roles.FirstOrDefaultAsync(r => r.Id == id);
+        }
+
+        public async Task<Role?> GetAsyncByUserId(Guid userId)
+        {
+            return (await _context.Users.Include(u => u.Role).FirstOrDefaultAsync(u => u.Id == userId))?.Role;
         }
 
         public async Task<Role?> GetByNameAsync(string name)
         {
-            return await _context.Roles.FirstOrDefaultAsync(r=>r.RoleName == name);
+            return await _context.Roles.FirstOrDefaultAsync(r => r.RoleName == name);
         }
     }
 }

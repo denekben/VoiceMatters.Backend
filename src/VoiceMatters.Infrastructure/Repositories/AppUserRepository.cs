@@ -16,7 +16,7 @@ namespace VoiceMatters.Infrastructure.Repositories
 
         public async Task<AppUser?> GetAsync(Guid id)
         {
-            return await _context.Users.FirstOrDefaultAsync(u=>u.Id == id);
+            return await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
         }
 
         public async Task<AppUser?> GetByEmailAsync(string email)
@@ -26,6 +26,7 @@ namespace VoiceMatters.Infrastructure.Repositories
 
         public async Task UpdateAsync(AppUser user)
         {
+            user.UpdatedDate = DateTime.UtcNow;
             _context.Users.Update(user);
             await _context.SaveChangesAsync();
         }

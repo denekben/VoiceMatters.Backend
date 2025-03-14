@@ -42,9 +42,9 @@ namespace VoiceMatters.Application.UseCases.Petitions.Commands.Handlers
 
             var (id, title, textPayload, tags, images) = command;
 
-            var petition = await _petitionRepository.GetAsync(id,
-                PetitionIncludes.Tags | PetitionIncludes.PetitionTags | PetitionIncludes.Images)
+            var petition = await _petitionRepository.GetAsync(id, PetitionIncludes.Tags | PetitionIncludes.Images)
                 ?? throw new BadRequestException($"Cannot find petition {id}");
+            await _petitionRepository.DeleteAsync(petition);
 
             var updatedPetition = Petition.Create(id, title, textPayload, creatorId)
                 ?? throw new BadRequestException($"Cannot update petition {id}");
@@ -53,7 +53,7 @@ namespace VoiceMatters.Application.UseCases.Petitions.Commands.Handlers
                 throw new BadRequestException("Authrization error");
 
             // adding new tags
-            var tagsToCreate = tags.Except(petition.Tags.Select(t => t.Name));
+            var tagsToCreate = tags.Except(petition.PetitionTags.Select(pt => pt.Tag.Name)).ToList();
             foreach (var tagName in tagsToCreate)
             {
                 var tag = await _tagRepository.GetTagByNameAsync(tagName);
@@ -62,38 +62,52 @@ namespace VoiceMatters.Application.UseCases.Petitions.Commands.Handlers
                     tag = Tag.Create(tagName)
                         ?? throw new BadRequestException($"Cannot create tag {tagName}");
                 }
-                petition.Tags.Add(tag);
 
                 var petitionTag = PetitionTag.Create(petition.Id, tag.Id)
                     ?? throw new BadRequestException("Cannot create PetitionTag");
+                petitionTag.Tag = tag;
                 petition.PetitionTags.Add(petitionTag);
             }
 
             // deleting tags
-            var tagsToDelete = petition.Tags.Select(t => t.Name).Except(tags);
+            var tagsToDelete = petition.PetitionTags.Select(pt => pt.Tag.Name).Except(tags).ToList();
             foreach (var tagName in tagsToDelete)
             {
-                var tagToDelete = petition.Tags.First(t => t.Name == tagName);
-                petition.Tags.Remove(tagToDelete);
+                var tagToDelete = petition.PetitionTags.Select(pt => pt.Tag).First(t => t.Name == tagName);
 
                 var petitionTagToDelete = petition.PetitionTags.First(pt => pt.TagId == tagToDelete.Id);
                 petition.PetitionTags.Remove(petitionTagToDelete);
             }
 
+            //updating images fields
+            var imagesToUpdate = images.Where(i => i.Uuid != null).ToList();
+            foreach (var image in imagesToUpdate)
+            {
+                var imageToUpdate = petition.Images.FirstOrDefault(i => i.Uuid == image.Uuid);
+                if (imageToUpdate != null)
+                {
+                    if (image.Uuid != null)
+                        imageToUpdate.Uuid = image.Uuid;
+                    imageToUpdate.Caption = image.Caption;
+                    imageToUpdate.Order = image.Order;
+                    imageToUpdate.PetitionId = petition.Id;
+                }
+            }
+
             // adding new images
-            var imagesToCreate = images.Where(i => i.Uuid == null);
+            var imagesToCreate = images.Where(i => i.Uuid == null).ToList();
+            var imagesToDelete = petition.Images.Select(i => i.Uuid).Except(images.Select(i => i.Uuid)).ToList();
             foreach (var image in imagesToCreate)
             {
                 var imageURL = await _imageService.UploadFileAsync(image.File)
                     ?? throw new BadRequestException("Cannot create imageURL");
-                var newImage = Domain.Entities.Image.Create(imageURL, image.Caption, image.Order, petition.Id)
+                var newImage = Image.Create(imageURL, image.Caption, image.Order, petition.Id)
                     ?? throw new BadRequestException("Cannot create new image");
 
                 petition.Images.Add(newImage);
             }
 
             // deleting images
-            var imagesToDelete = petition.Images.Select(i => i.Uuid).Except(images.Select(i => i.Uuid));
             foreach (var petitionImage in imagesToDelete)
             {
                 await _imageService.DeleteByUuidAsync(petitionImage);
@@ -103,10 +117,10 @@ namespace VoiceMatters.Application.UseCases.Petitions.Commands.Handlers
 
             updatedPetition.Images = petition.Images;
             updatedPetition.PetitionTags = petition.PetitionTags;
-            updatedPetition.Tags = petition.Tags;
             updatedPetition.Creator = creator;
 
-            await _petitionRepository.UpdateAsync(updatedPetition);
+
+            await _petitionRepository.AddAsync(updatedPetition);
             _logger.LogInformation($"Petition {updatedPetition.Id} updated");
 
             return updatedPetition.AsDto(true);

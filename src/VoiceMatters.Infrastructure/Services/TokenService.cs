@@ -37,7 +37,7 @@ namespace VoiceMatters.Infrastructure.Services
                 Expires = DateTime.UtcNow.AddDays(Convert.ToDouble(_config["JWT:AccessTokenLifeTime"])),
                 SigningCredentials = creds,
                 Issuer = _config["JWT:Issuer"],
-                Audience = _config["JWT:Audience"],
+                Audience = _config["JWT:Audience"]
             };
 
             var tokenHandler = new JwtSecurityTokenHandler();

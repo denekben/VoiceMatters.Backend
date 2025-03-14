@@ -33,6 +33,7 @@ namespace VoiceMatters.Infrastructure.Repositories
 
         public async Task UpdateAsync(News news)
         {
+            news.UpdatedDate = DateTime.UtcNow;
             _context.News.Update(news);
             await _context.SaveChangesAsync();
         }

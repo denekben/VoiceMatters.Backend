@@ -24,7 +24,6 @@ namespace VoiceMatters.Domain.Entities
         public Guid? CreatorId { get; set; }
         public AppUser Creator { get; set; }
         public List<PetitionTag> PetitionTags { get; set; } = [];
-        public List<Tag> Tags { get; set; } = [];
         public List<Image> Images { get; set; } = [];
         public List<AppUserSignedPetition> SignedUsers { get; set; } = [];
         public News? News { get; set; }
@@ -75,7 +74,7 @@ namespace VoiceMatters.Domain.Entities
                 throw new InvalidArgumentDomainException($"Invalid argument for Petition[title]. Entered value: {title}");
             if (string.IsNullOrWhiteSpace(textPayload) || textPayload.Length < _minTextPayloadLength || textPayload.Length > _maxTextPayloadLength)
                 throw new InvalidArgumentDomainException($"Invalid argument for Petition[textPayload]. Entered value: {textPayload}");
-            return new(title, textPayload, creatorId);
+            return new(id, title, textPayload, creatorId);
         }
     }
 }

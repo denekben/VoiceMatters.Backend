@@ -11,7 +11,6 @@ namespace VoiceMatters.Domain.Entities
 
         private static readonly Regex _phonePattern = new(@"^((8|\+7)[\- ]?)?(\(?\d{3}\)?[\- ]?)?[\d\- ]{7,10}$", RegexOptions.IgnoreCase);
         private static readonly Regex _emailPattern = new(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", RegexOptions.IgnoreCase);
-        private static readonly Regex _passwordPattern = new(@"^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[^a-zA-Z0-9]).{8,30}$");
         private static readonly List<string> _allowedSex = ["Male", "Female"];
 
         public Guid Id { get; set; }
@@ -24,7 +23,7 @@ namespace VoiceMatters.Domain.Entities
         public string? Sex { get; set; }
         public string? ImageUuid { get; set; }
         public bool IsBlocked { get; set; }
-        public string RefreshToken { get; set; }
+        public string? RefreshToken { get; set; }
         public DateTime RefreshTokenExpires { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime? UpdatedDate { get; set; }
@@ -73,9 +72,6 @@ namespace VoiceMatters.Domain.Entities
 
             if (string.IsNullOrWhiteSpace(email) || !_emailPattern.IsMatch(email))
                 throw new InvalidArgumentDomainException($"Invalid argument for AppUser[email]. Entered value: {email}");
-
-            if (string.IsNullOrWhiteSpace(password) || !_passwordPattern.IsMatch(password) || password.Contains(' '))
-                throw new InvalidArgumentDomainException($"Invalid argument for AppUser[password]. Entered value: {password}");
 
             if (birthDate != null && birthDate >= DateTime.UtcNow)
                 throw new InvalidArgumentDomainException($"Invalid argument for AppUser[birthDate]. Entered value: {birthDate}");

@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using VoiceMatters.Application.UseCases.News.Commands;
 using VoiceMatters.Application.UseCases.News.Queries;
@@ -18,6 +19,7 @@ namespace VoiceMatters.WebUI.Controllers
         }
 
         [HttpPost]
+        [Authorize(Policy = "IsNotBlocked")]
         public async Task<ActionResult<NewsDto?>> CreateNews([FromBody] CreateNews command)
         {
             var news = await _sender.Send(command);
@@ -25,6 +27,7 @@ namespace VoiceMatters.WebUI.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Policy = "IsNotBlocked")]
         public async Task<IActionResult> DeleteNews([FromRoute] Guid id)
         {
             await _sender.Send(new DeleteNews(id));
@@ -32,6 +35,7 @@ namespace VoiceMatters.WebUI.Controllers
         }
 
         [HttpPut]
+        [Authorize(Policy = "IsNotBlocked")]
         public async Task<ActionResult<NewsDto?>> UpdateNews([FromBody] UpdateNews command)
         {
             var news = await _sender.Send(command);
@@ -42,6 +46,8 @@ namespace VoiceMatters.WebUI.Controllers
         public async Task<ActionResult<List<NewsDto>?>> GetNews([FromQuery] GetNews query)
         {
             var news = await _sender.Send(query);
+            if (news == null)
+                return NotFound();
             return Ok(news);
         }
     }

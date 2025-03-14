@@ -19,9 +19,9 @@ namespace VoiceMatters.Infrastructure.Queries.Users
         public async Task<List<ProfilePlateDto>?> Handle(GetUserPlates query, CancellationToken cancellationToken)
         {
             var users = _context.Users.AsNoTracking()
-                .Where(u=>(
-                EF.Functions.ILike(u.FirstName, $"{query.SearchPhrase ?? string.Empty}") ||
-                EF.Functions.ILike(u.LastName, $"{query.SearchPhrase ?? string.Empty}")));
+                .Where(u => (
+                EF.Functions.ILike(u.FirstName, $"%{query.SearchPhrase ?? string.Empty}%") ||
+                EF.Functions.ILike(u.LastName, $"%{query.SearchPhrase ?? string.Empty}%")));
 
             int skipNumber = (query.PageNumber - 1) * query.PageSize;
 

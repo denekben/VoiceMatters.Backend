@@ -34,10 +34,10 @@ namespace VoiceMatters.Infrastructure.Queries.Petitions
 
             if (userId != null)
             {
-                currentUser = await _context.Users.AsNoTracking().Include(u=>u.PetitionsSignedByUser).FirstOrDefaultAsync(u=>u.Id == userId);
+                currentUser = await _context.Users.AsNoTracking().Include(u => u.PetitionsSignedByUser).FirstOrDefaultAsync(u => u.Id == userId);
             }
 
-            petition = petition.Include(p => p.Images).Include(p => p.Tags).Include(p=>p.Creator);
+            petition = petition.Include(p => p.Images).Include(p => p.PetitionTags).ThenInclude(pt => pt.Tag).Include(p => p.Creator).Include(p => p.News);
 
             return (await petition.FirstOrDefaultAsync())?.AsDto(
                 currentUser != null &&

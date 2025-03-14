@@ -21,6 +21,8 @@ namespace VoiceMatters.WebUI.Controllers
             [FromQuery] GetTags query)
         {
             var tags = await _sender.Send(query);
+            if (tags == null)
+                return NotFound();
             return Ok(tags);
         }
     }

@@ -3,7 +3,6 @@ using Microsoft.Extensions.Logging;
 using System.Security.Claims;
 using VoiceMatters.Application.Services;
 using VoiceMatters.Domain.Repositories;
-using VoiceMatters.Shared.Exceptions;
 
 namespace VoiceMatters.Application.UseCases.Identity.Commands.Handlers
 {
@@ -36,10 +35,7 @@ namespace VoiceMatters.Application.UseCases.Identity.Commands.Handlers
 
             var user = await _authService.GetUserByEmailAsync(email);
 
-            var role = await _roleRepository.GetAsync(user.Id)
-                ?? throw new BadRequestException($"Cannot find role for user {user.Id}");
-
-            string accessToken = _tokenService.GenerateAccessToken(user.Id, user.LastName, email, role.RoleName)
+            string accessToken = _tokenService.GenerateAccessToken(user.Id, user.LastName, email, user.Role.RoleName)
                 ?? throw new InvalidOperationException("Cannot create access token");
 
             _logger.LogInformation($"User {user.Id} refreshed expired token");
