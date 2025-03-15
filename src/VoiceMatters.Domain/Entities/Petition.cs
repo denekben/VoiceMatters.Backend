@@ -38,8 +38,8 @@ namespace VoiceMatters.Domain.Entities
             Id = Guid.NewGuid();
             Title = title;
             TextPayload = textPayload;
-            SignQuantity = 0;
-            SignQuantityPerDay = 0;
+            SignQuantity = 1;
+            SignQuantityPerDay = 1;
 
             CreatedDate = DateTime.UtcNow;
             CreatorId = creatorId;

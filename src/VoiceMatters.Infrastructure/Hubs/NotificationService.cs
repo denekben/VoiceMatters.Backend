@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.SignalR;
+using Newtonsoft.Json;
 using VoiceMatters.Application.Services;
 
 namespace VoiceMatters.Infrastructure.Hubs
@@ -17,9 +18,11 @@ namespace VoiceMatters.Infrastructure.Hubs
             await _hubContext.Clients.All.SendAsync(nameof(PetitionCreated));
         }
 
-        public async Task PetitionDeleted()
+        public async Task PetitionDeleted(int signsQuantity)
         {
-            await _hubContext.Clients.All.SendAsync(nameof(PetitionDeleted));
+            var data = new { Method = nameof(PetitionDeleted), Quantity = signsQuantity };
+            var json = JsonConvert.SerializeObject(data);
+            await _hubContext.Clients.All.SendAsync(json);
         }
 
         public async Task PetitionSigned()
