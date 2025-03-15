@@ -4,7 +4,7 @@
     {
         Task PetitionSigned();
         Task PetitionCreated();
-        Task PetitionDeleted();
+        Task PetitionDeleted(int signsQuantity);
         Task UserRegistered();
     }
 }

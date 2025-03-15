@@ -17,7 +17,7 @@ namespace VoiceMatters.Infrastructure.BackgroundServices
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            _timer = new Timer(DoRefresh, null, TimeSpan.Zero, TimeSpan.FromHours(6));
+            _timer = new Timer(DoRefresh, null, TimeSpan.Zero, TimeSpan.FromDays(1));
             return Task.CompletedTask;
         }
 
@@ -28,22 +28,15 @@ namespace VoiceMatters.Infrastructure.BackgroundServices
                 var context = scope.ServiceProvider
                     .GetRequiredService<AppDbContext>();
 
-                var today = DateTime.Today;
-
                 var petitions = await context.Petitions
-                    .Include(p => p.SignedUsers)
                     .ToListAsync();
 
                 foreach (var petition in petitions)
                 {
-                    var signedToday = petition.SignedUsers
-                        .Count(s => s.SignedDate.Date == today);
-
-                    petition.SignQuantityPerDay = (uint)signedToday;
-
-                    context.Entry(petition).Property(p => p.SignQuantityPerDay).IsModified = true;
+                    petition.SignQuantityPerDay = 0;
                 }
 
+                context.Petitions.UpdateRange(petitions);
                 await context.SaveChangesAsync();
             }
         }

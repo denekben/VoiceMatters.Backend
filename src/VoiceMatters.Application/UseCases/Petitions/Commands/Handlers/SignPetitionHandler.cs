@@ -35,6 +35,9 @@ namespace VoiceMatters.Application.UseCases.Petitions.Commands.Handlers
             var petition = await _petitionRepository.GetAsync(command.Id)
                 ?? throw new BadRequestException($"Cannot find petition {command.Id}");
 
+            petition.SignQuantityPerDay += 1;
+            petition.SignQuantity += 1;
+
             var signerId = _contextService.GetCurrentUserId();
 
             var petitionSigner = await _userPetitionRepository.GetAsync(petition.Id, signerId);
@@ -54,6 +57,7 @@ namespace VoiceMatters.Application.UseCases.Petitions.Commands.Handlers
             }
 
             await _userPetitionRepository.AddAsync(sign);
+            await _petitionRepository.UpdateAsync(petition);
             _logger.LogInformation("Petition signed");
         }
     }

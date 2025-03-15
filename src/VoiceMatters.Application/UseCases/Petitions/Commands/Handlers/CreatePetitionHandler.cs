@@ -77,7 +77,6 @@ namespace VoiceMatters.Application.UseCases.Petitions.Commands.Handlers
             var sign = AppUserSignedPetition.Create(creatorId, petition.Id)
                 ?? throw new BadRequestException("Cannot sign petition");
             petition.SignedUsers.Add(sign);
-            petition.SignQuantity += 1;
 
             petition.Creator = creator;
 

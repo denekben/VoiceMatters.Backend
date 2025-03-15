@@ -43,8 +43,9 @@ namespace VoiceMatters.Application.UseCases.Petitions.Commands.Handlers
             if (stats != null)
             {
                 stats.Update(StatParameter.PetitionQuantity, -1);
+                stats.Update(StatParameter.SignsQuantity, -1 * (int)petition.SignQuantity);
                 await _statisticRepository.UpdateAsync(stats);
-                await _notifications.PetitionDeleted();
+                await _notifications.PetitionDeleted((int)petition.SignQuantity);
             }
 
             // deleting images
