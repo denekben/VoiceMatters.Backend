@@ -1,6 +1,6 @@
-﻿using VoiceMatters.Shared.DTOs;
-using MediatR;
+﻿using MediatR;
 using Microsoft.AspNetCore.Http;
+using VoiceMatters.Shared.DTOs;
 
 namespace VoiceMatters.Application.UseCases.Identity.Commands
 {
@@ -12,5 +12,5 @@ namespace VoiceMatters.Application.UseCases.Identity.Commands
         string Email,
         DateTime? DateOfBirth,
         string? Sex,
-        IFormFile Image) : IRequest<TokensDto?>;
+        IFormFile? Image) : IRequest<TokensDto?>;
 }

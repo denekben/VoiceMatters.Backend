@@ -40,11 +40,15 @@ namespace VoiceMatters.Application.UseCases.Identity.Commands.Handlers
 
             var hashedPassword = _authService.HashPassword(password);
 
-            var imageURL = await _imageService.UploadFileAsync(image);
+            string? imageUrl = null;
+            if (image != null)
+            {
+                imageUrl = await _imageService.UploadFileAsync(image);
+            }
 
             var refreshToken = _tokenService.GenerateRefreshToken();
 
-            var user = await _authService.CreateUserAsync(firstName, lastName, phone, email, hashedPassword, dateOfBirth, sex, imageURL, role.Id);
+            var user = await _authService.CreateUserAsync(firstName, lastName, phone, email, hashedPassword, dateOfBirth, sex, imageUrl, role.Id);
 
             await _authService.UpdateRefreshToken(email, refreshToken);
             var accessToken = _tokenService.GenerateAccessToken(user.Id, lastName, email, Role.User.RoleName)
