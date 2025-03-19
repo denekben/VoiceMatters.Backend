@@ -40,7 +40,7 @@ namespace VoiceMatters.Application.UseCases.Identity.Commands.Handlers
 
             var hashedPassword = _authService.HashPassword(password);
 
-            string? imageUrl = null;
+            string imageUrl = null;
             if (image != null)
             {
                 imageUrl = await _imageService.UploadFileAsync(image);

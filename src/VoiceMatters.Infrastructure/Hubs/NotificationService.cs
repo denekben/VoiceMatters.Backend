@@ -15,7 +15,8 @@ namespace VoiceMatters.Infrastructure.Hubs
 
         public async Task PetitionCreated()
         {
-            await _hubContext.Clients.All.SendAsync(nameof(PetitionCreated));
+            var json = JsonConvert.SerializeObject(new { Method = nameof(PetitionCreated) });
+            await _hubContext.Clients.All.SendAsync(json);
         }
 
         public async Task PetitionDeleted(int signsQuantity)
@@ -27,12 +28,14 @@ namespace VoiceMatters.Infrastructure.Hubs
 
         public async Task PetitionSigned()
         {
-            await _hubContext.Clients.All.SendAsync(nameof(PetitionSigned));
+            var json = JsonConvert.SerializeObject(new { Method = nameof(PetitionSigned) });
+            await _hubContext.Clients.All.SendAsync(json);
         }
 
         public async Task UserRegistered()
         {
-            await _hubContext.Clients.All.SendAsync(nameof(UserRegistered));
+            var json = JsonConvert.SerializeObject(new { Method = nameof(UserRegistered) });
+            await _hubContext.Clients.All.SendAsync(json);
         }
     }
 }
