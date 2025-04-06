@@ -58,10 +58,8 @@ namespace VoiceMatters.Infrastructure.Services
             {
                 _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Uploadcare.Simple", $"{_publicKey}:{_privateKey}");
 
-                // Установка заголовка Accept
                 _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.uploadcare-v0.7+json"));
 
-                // Выполнение запроса на удаление файла
                 await _httpClient.DeleteAsync($"https://api.uploadcare.com/files/{uuid}/storage/");
             }
             catch (Exception e)
