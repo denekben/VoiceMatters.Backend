@@ -8,7 +8,7 @@ namespace VoiceMatters.Domain.Entities
         private const int _minTitleLength = 10;
         private const int _maxTitleLength = 200;
         private const int _minTextPayloadLength = 200;
-        private const int _maxTextPayloadLength = 2000;
+        private const int _maxTextPayloadLength = 20_000;
 
         public Guid Id { get; set; }
         public string Title { get; set; }
