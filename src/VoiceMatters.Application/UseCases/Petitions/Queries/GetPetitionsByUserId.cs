@@ -12,6 +12,7 @@ namespace VoiceMatters.Application.UseCases.Petitions.Queries
         string IncludeCompleted = "Disable",
         string SortBySignQuantityPerDay = "Descending",
         string SortBySignQuantity = "Disable",
-        string SortByDate = "Disable"
+        string SortByDate = "Disable",
+        bool AllowBlocked = false
     ) : IRequest<List<PetitionDto>?>;
 }

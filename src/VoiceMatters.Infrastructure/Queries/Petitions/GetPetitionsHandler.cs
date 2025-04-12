@@ -82,8 +82,10 @@ namespace VoiceMatters.Infrastructure.Queries.Petitions
             AppUser? currentUser = null;
             if (currentUserId != null)
             {
-                currentUser = await _context.Users.AsNoTracking().Include(u => u.PetitionsSignedByUser).FirstOrDefaultAsync(u => u.Id == currentUserId);
+                currentUser = await _context.Users.AsNoTracking().Include(u => u.PetitionsSignedByUser).Include(u => u.Role).FirstOrDefaultAsync(u => u.Id == currentUserId);
             }
+            if (currentUser?.Role.RoleName != Role.Admin.RoleName || !query.AllowBlocked)
+                userPetitions = userPetitions.Where(p => !p.IsBlocked);
 
             userPetitions = userPetitions
                 .Include(p => p.Images)

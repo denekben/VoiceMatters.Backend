@@ -81,10 +81,12 @@ namespace VoiceMatters.Infrastructure.Queries.Petitions
             AppUser? currentUser = null;
             if (currentUserId != null)
             {
-                currentUser = await _context.Users.AsNoTracking().Include(u => u.PetitionsSignedByUser).FirstOrDefaultAsync(u => u.Id == currentUserId);
+                currentUser = await _context.Users.AsNoTracking().Include(u => u.PetitionsSignedByUser).Include(u => u.Role).FirstOrDefaultAsync(u => u.Id == currentUserId);
             }
+            if (currentUser?.Role.RoleName != Role.Admin.RoleName || !query.AllowBlocked)
+                userPetitions = userPetitions.Where(p => !p.IsBlocked);
 
-            userPetitions = userPetitions.Include(p => p.Images).Include(p => p.PetitionTags).ThenInclude(pt => pt.Tag).Include(p => p.Creator).Include(p => p.News);
+            userPetitions.Include(p => p.Images).Include(p => p.PetitionTags).ThenInclude(pt => pt.Tag).Include(p => p.Creator).Include(p => p.News);
 
             var signedPetitionIds = currentUser?.PetitionsSignedByUser?.Select(up => up.PetitionId).ToList() ?? new List<Guid>();
 

@@ -34,12 +34,16 @@ namespace VoiceMatters.Infrastructure.Queries.Petitions
 
             if (userId != null)
             {
-                currentUser = await _context.Users.AsNoTracking().Include(u => u.PetitionsSignedByUser).FirstOrDefaultAsync(u => u.Id == userId);
+                currentUser = await _context.Users.AsNoTracking().Include(u => u.PetitionsSignedByUser).Include(u => u.Role).FirstOrDefaultAsync(u => u.Id == userId);
             }
+            if (currentUser?.Role.RoleName != Role.Admin.RoleName || !query.AllowBlocked)
+                petition = petition.Where(p => !p.IsBlocked);
 
-            petition = petition.Include(p => p.Images).Include(p => p.PetitionTags).ThenInclude(pt => pt.Tag).Include(p => p.Creator).Include(p => p.News);
+            petition.Include(p => p.Images).Include(p => p.PetitionTags).ThenInclude(pt => pt.Tag).Include(p => p.Creator).Include(p => p.News);
 
-            return (await petition.FirstOrDefaultAsync())?.AsDto(
+            var petitionEntity = await petition.FirstOrDefaultAsync();
+
+            return (petitionEntity)?.AsDto(
                 currentUser != null &&
                 currentUser.PetitionsSignedByUser != null &&
                 currentUser.PetitionsSignedByUser.Any(up => up.PetitionId == query.Id));
