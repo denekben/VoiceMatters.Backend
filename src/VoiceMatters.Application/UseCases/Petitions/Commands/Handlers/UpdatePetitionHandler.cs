@@ -44,6 +44,10 @@ namespace VoiceMatters.Application.UseCases.Petitions.Commands.Handlers
 
             var petition = await _petitionRepository.GetAsync(id, PetitionIncludes.Tags | PetitionIncludes.Images)
                 ?? throw new BadRequestException($"Cannot find petition {id}");
+
+            if (petition.SignQuantity >= 1000)
+                throw new BadRequestException($"Cannot update petition with 1000 and more signs");
+
             await _petitionRepository.DeleteAsync(petition);
 
             var updatedPetition = Petition.Create(id, title, textPayload, creatorId)

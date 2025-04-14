@@ -29,6 +29,8 @@ namespace VoiceMatters.Infrastructure.Queries.Users
             {
                 userId = _contextService.GetCurrentUserId();
             }
+            catch (Exception) { }
+
             if (userId != null)
             {
                 currentUser = await _context.Users.AsNoTracking().Include(u => u.Role).FirstOrDefaultAsync(u => u.Id == userId);
