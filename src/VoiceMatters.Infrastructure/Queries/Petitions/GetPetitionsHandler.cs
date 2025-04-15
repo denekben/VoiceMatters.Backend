@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using VoiceMatters.Application.Mappers;
 using VoiceMatters.Application.UseCases.Petitions.Queries;
 using VoiceMatters.Domain.Entities;
+using VoiceMatters.Domain.Entities.Pivots;
 using VoiceMatters.Infrastructure.Data;
 using VoiceMatters.Shared.DTOs;
 using VoiceMatters.Shared.Services;
@@ -94,12 +95,16 @@ namespace VoiceMatters.Infrastructure.Queries.Petitions
                 .Include(p => p.Creator)
                 .Include(p => p.News);
 
+            var petitionsSignedByUser = new List<AppUserSignedPetition>();
+            if (currentUser?.PetitionsSignedByUser != null)
+                petitionsSignedByUser = currentUser.PetitionsSignedByUser.ToList();
+
             return await userPetitions
                 .Select(
                     p => p.AsDto(
                         currentUser != null &&
-                        currentUser.PetitionsSignedByUser != null &&
-                        currentUser.PetitionsSignedByUser.Any(up => up.PetitionId == p.Id))
+                        petitionsSignedByUser != null &&
+                        petitionsSignedByUser.Any(up => up.PetitionId == p.Id))
                 ).ToListAsync();
         }
     }
