@@ -89,14 +89,15 @@ namespace VoiceMatters.Infrastructure.Queries.Petitions
             userPetitions.Include(p => p.Images).Include(p => p.PetitionTags).ThenInclude(pt => pt.Tag).Include(p => p.Creator).Include(p => p.News);
 
             var signedPetitionIds = currentUser?.PetitionsSignedByUser?.Select(up => up.PetitionId).ToList() ?? new List<Guid>();
+            var userPetitionsList = await userPetitions.ToListAsync();
 
-            return await userPetitions
+            return userPetitionsList
                 .Select(
                     p => p.AsDto(
                         currentUser != null &&
                         currentUser.PetitionsSignedByUser != null &&
                         signedPetitionIds.Contains(p.Id))
-                ).ToListAsync();
+                ).ToList();
         }
     }
 }

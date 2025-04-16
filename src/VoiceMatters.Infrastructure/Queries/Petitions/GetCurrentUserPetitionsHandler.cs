@@ -74,8 +74,9 @@ namespace VoiceMatters.Infrastructure.Queries.Petitions
             }
 
             userPetitions = userPetitions.Include(p => p.Images).Include(p => p.Creator).Include(p => p.News);
+            var userPetitionsList = await userPetitions.ToListAsync();
 
-            return await userPetitions.Select(p => p.AsDto(p.CreatorId == userId)).ToListAsync();
+            return userPetitionsList.Select(p => p.AsDto(p.CreatorId == userId)).ToList();
         }
     }
 }

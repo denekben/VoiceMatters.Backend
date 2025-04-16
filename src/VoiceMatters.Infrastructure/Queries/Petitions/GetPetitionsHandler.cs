@@ -95,14 +95,15 @@ namespace VoiceMatters.Infrastructure.Queries.Petitions
                 .Include(p => p.News);
 
             var petitionsSignedByUser = currentUser?.PetitionsSignedByUser.ToList();
+            var userPetitionsList = await userPetitions.ToListAsync();
 
-            return await userPetitions
+            return userPetitionsList
                 .Select(
                     p => p.AsDto(
                         currentUser != null &&
                         petitionsSignedByUser != null &&
                         petitionsSignedByUser.Any(up => up.PetitionId == p.Id))
-                ).ToListAsync();
+                ).ToList();
         }
     }
 }
