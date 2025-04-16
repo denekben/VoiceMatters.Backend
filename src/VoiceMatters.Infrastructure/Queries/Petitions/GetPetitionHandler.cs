@@ -39,7 +39,7 @@ namespace VoiceMatters.Infrastructure.Queries.Petitions
             if (currentUser?.Role.RoleName != Role.Admin.RoleName || !query.AllowBlocked)
                 petition = petition.Where(p => !p.IsBlocked);
 
-            petition.Include(p => p.Images).Include(p => p.PetitionTags).ThenInclude(pt => pt.Tag).Include(p => p.Creator).Include(p => p.News);
+            petition = petition.Include(p => p.Images).Include(p => p.PetitionTags).ThenInclude(pt => pt.Tag).Include(p => p.Creator).Include(p => p.News);
 
             var petitionEntity = await petition.FirstOrDefaultAsync();
 
