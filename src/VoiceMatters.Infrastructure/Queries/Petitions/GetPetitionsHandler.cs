@@ -32,9 +32,6 @@ namespace VoiceMatters.Infrastructure.Queries.Petitions
 
             var userPetitions = _context.Petitions.AsNoTracking().Where(p => EF.Functions.ILike(p.Title, $"%{query.SearchPhrase ?? string.Empty}%"));
 
-            int skipNumber = (query.PageNumber - 1) * query.PageSize;
-            userPetitions = userPetitions.Skip(skipNumber).Take(query.PageSize);
-
             if (query.TagIds != null && query.TagIds.Count != 0)
             {
                 userPetitions = userPetitions
@@ -86,6 +83,9 @@ namespace VoiceMatters.Infrastructure.Queries.Petitions
             }
             if (currentUser?.Role.RoleName != Role.Admin.RoleName || !query.AllowBlocked)
                 userPetitions = userPetitions.Where(p => !p.IsBlocked);
+
+            int skipNumber = (query.PageNumber - 1) * query.PageSize;
+            userPetitions = userPetitions.Skip(skipNumber).Take(query.PageSize);
 
             userPetitions = userPetitions
                 .Include(p => p.Images)

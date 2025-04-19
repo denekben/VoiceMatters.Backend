@@ -34,9 +34,6 @@ namespace VoiceMatters.Infrastructure.Queries.Petitions
 
             userPetitions = userPetitions.Where(p => EF.Functions.ILike(p.Title, $"%{query.SearchPhrase ?? string.Empty}%"));
 
-            int skipNumber = (query.PageNumber - 1) * query.PageSize;
-            userPetitions = userPetitions.Skip(skipNumber).Take(query.PageSize);
-
             if (query.TagIds != null && query.TagIds.Count != 0)
             {
                 userPetitions = userPetitions.Include(p => p.PetitionTags).ThenInclude(pt => pt.Tag).Where(p => query.TagIds.All(tagId => p.PetitionTags.Any(pt => pt.Tag.Id == tagId)));
@@ -87,6 +84,9 @@ namespace VoiceMatters.Infrastructure.Queries.Petitions
                 userPetitions = userPetitions.Where(p => !p.IsBlocked);
 
             userPetitions.Include(p => p.Images).Include(p => p.PetitionTags).ThenInclude(pt => pt.Tag).Include(p => p.Creator).Include(p => p.News);
+
+            int skipNumber = (query.PageNumber - 1) * query.PageSize;
+            userPetitions = userPetitions.Skip(skipNumber).Take(query.PageSize);
 
             var signedPetitionIds = currentUser?.PetitionsSignedByUser?.Select(up => up.PetitionId).ToList() ?? new List<Guid>();
             var userPetitionsList = await userPetitions.ToListAsync();
