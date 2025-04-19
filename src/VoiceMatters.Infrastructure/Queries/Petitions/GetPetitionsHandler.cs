@@ -74,7 +74,7 @@ namespace VoiceMatters.Infrastructure.Queries.Petitions
             {
                 userPetitions = userPetitions.OrderByDescending(p => p.CreatedDate);
             }
-            else if (query.SortBySignQuantity == Sort.Ascending.ToString())
+            else if (query.SortByDate == Sort.Ascending.ToString())
             {
                 userPetitions = userPetitions.OrderBy(p => p.CreatedDate);
             }
