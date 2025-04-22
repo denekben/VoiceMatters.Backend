@@ -21,10 +21,6 @@ namespace VoiceMatters.Infrastructure.Queries.News
         {
             var news = _context.News.AsNoTracking().Where(n => EF.Functions.ILike(n.Title, $"%{query.SearchPhrase ?? string.Empty}%"));
 
-            int skipNumber = (query.PageNumber - 1) * query.PageSize;
-
-            news = news.Skip(skipNumber).Take(query.PageSize);
-
             news = news
                 .Include(n => n.Petition)
                 .ThenInclude(p => p.PetitionTags).ThenInclude(pt => pt.Tag)
@@ -57,6 +53,10 @@ namespace VoiceMatters.Infrastructure.Queries.News
             {
                 news = news.OrderBy(n => n.Petition.CompletedDate);
             }
+
+            int skipNumber = (query.PageNumber - 1) * query.PageSize;
+
+            news = news.Skip(skipNumber).Take(query.PageSize);
 
             return await news.Select(n => n.AsDto()).ToListAsync();
         }

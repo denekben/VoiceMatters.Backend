@@ -27,9 +27,6 @@ namespace VoiceMatters.Infrastructure.Queries.Petitions
 
             userPetitions = userPetitions.Where(p => EF.Functions.ILike(p.Title, $"%{query.SearchPhrase ?? string.Empty}%"));
 
-            int skipNumber = (query.PageNumber - 1) * query.PageSize;
-            userPetitions = userPetitions.Skip(skipNumber).Take(query.PageSize);
-
             userPetitions = userPetitions.Include(p => p.PetitionTags).ThenInclude(pt => pt.Tag);
 
             if (query.TagIds != null && query.TagIds.Count != 0)
@@ -75,6 +72,9 @@ namespace VoiceMatters.Infrastructure.Queries.Petitions
 
             userPetitions = userPetitions.Include(p => p.Images).Include(p => p.Creator).Include(p => p.News);
             var userPetitionsList = await userPetitions.ToListAsync();
+
+            int skipNumber = (query.PageNumber - 1) * query.PageSize;
+            userPetitions = userPetitions.Skip(skipNumber).Take(query.PageSize);
 
             return userPetitionsList.Select(p => p.AsDto(p.CreatorId == userId)).ToList();
         }

@@ -37,8 +37,8 @@ namespace VoiceMatters.Infrastructure.Queries.Users
 
             var users = _context.Users.AsNoTracking()
                 .Where(u => (
-                EF.Functions.ILike(u.FirstName, $"%{query.SearchPhrase ?? string.Empty}%") ||
-                EF.Functions.ILike(u.LastName, $"%{query.SearchPhrase ?? string.Empty}%")));
+                EF.Functions.ILike(u.FirstName + " " + u.LastName, $"%{query.SearchPhrase ?? string.Empty}%") ||
+                EF.Functions.ILike(u.LastName + " " + u.FirstName, $"%{query.SearchPhrase ?? string.Empty}%")));
 
             if (currentUser?.Role.RoleName != Role.Admin.RoleName || !query.AllowBlocked)
                 users = users.Where(u => !u.IsBlocked);
