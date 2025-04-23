@@ -9,7 +9,7 @@ namespace VoiceMatters.Application.UseCases.Petitions.Queries
         int PageNumber = 1,
         int PageSize = 20,
         string SearchPhrase = "",
-        string IncludeCompleted = "Disable",
+        string IncludeCompleted = "",
         string SortBySignQuantityPerDay = "Descending",
         string SortBySignQuantity = "Disable",
         string SortByDate = "Disable",
