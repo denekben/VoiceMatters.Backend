@@ -15,15 +15,17 @@ namespace VoiceMatters.Application.UseCases.News.Commands.Handlers
         private readonly IHttpContextService _contextService;
         private readonly IPetitionRepository _petitionRepository;
         private readonly INewsRepository _newsRepository;
+        private readonly IRepository _repository;
 
         public CreateNewsHandler(ILogger<CreateNewsHandler> logger,
             IHttpContextService contextService, IPetitionRepository petitionRepository,
-            INewsRepository newsRepository)
+            INewsRepository newsRepository, IRepository repository)
         {
             _logger = logger;
             _contextService = contextService;
             _petitionRepository = petitionRepository;
             _newsRepository = newsRepository;
+            _repository = repository;
         }
 
         public async Task<NewsDto?> Handle(CreateNews command, CancellationToken cancellationToken)
@@ -50,6 +52,7 @@ namespace VoiceMatters.Application.UseCases.News.Commands.Handlers
 
             news.Petition = petition;
 
+            await _repository.SaveChangesAsync();
             return news.AsDto();
         }
     }

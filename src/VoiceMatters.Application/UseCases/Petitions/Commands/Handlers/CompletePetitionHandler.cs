@@ -11,13 +11,16 @@ namespace VoiceMatters.Application.UseCases.Petitions.Commands.Handlers
         private readonly ILogger<CompletePetitionHandler> _logger;
         private readonly IHttpContextService _contextService;
         private readonly IPetitionRepository _petitionRepository;
+        private readonly IRepository _repository;
 
         public CompletePetitionHandler(ILogger<CompletePetitionHandler> logger,
-            IHttpContextService contextService, IPetitionRepository petitionRepository)
+            IHttpContextService contextService, IPetitionRepository petitionRepository,
+            IRepository repository)
         {
             _logger = logger;
             _contextService = contextService;
             _petitionRepository = petitionRepository;
+            _repository = repository;
         }
 
         public async Task Handle(CompletePetition command, CancellationToken cancellationToken)
@@ -36,7 +39,7 @@ namespace VoiceMatters.Application.UseCases.Petitions.Commands.Handlers
             petition.IsCompleted = true;
             petition.CompletedDate = DateTime.UtcNow;
 
-            await _petitionRepository.UpdateAsync(petition);
+            await _repository.SaveChangesAsync();
 
             _logger.LogInformation($"Petition {petition.Id} completed");
         }

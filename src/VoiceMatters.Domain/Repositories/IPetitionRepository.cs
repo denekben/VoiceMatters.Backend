@@ -7,7 +7,6 @@ namespace VoiceMatters.Domain.Repositories
         Task<Petition?> GetAsync(Guid id);
         Task<Petition?> GetAsync(Guid id, PetitionIncludes petitionIncludes, TrackingType trackingType = TrackingType.Tracking);
         Task DeleteAsync(Petition petition);
-        Task UpdateAsync(Petition petition);
         Task AddAsync(Petition petition);
     }
 

@@ -30,6 +30,9 @@ namespace VoiceMatters.Infrastructure
             services.AddScoped<IRoleRepository, RoleRepository>();
             services.AddScoped<IStatisticRepository, StatisticRepository>();
             services.AddScoped<ITagRepository, TagRepository>();
+            services.AddScoped<IPetitionTagRepository, PetitionTagRepository>();
+            services.AddScoped<IImageRepository, ImageRepository>();
+            services.AddScoped<IRepository, Repository>();
 
             services.AddSignalR();
             services.AddScoped<INotificationService, NotificationService>();

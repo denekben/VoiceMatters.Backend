@@ -9,12 +9,14 @@ namespace VoiceMatters.Application.UseCases.Administration.Commands.Handlers
     {
         private readonly IPetitionRepository _petitionRepository;
         private readonly ILogger<BlockPetitionHandler> _logger;
+        private readonly IRepository _repository;
 
         public BlockPetitionHandler(IPetitionRepository petitionRepository,
-            ILogger<BlockPetitionHandler> logger)
+            ILogger<BlockPetitionHandler> logger, IRepository repository)
         {
             _petitionRepository = petitionRepository;
             _logger = logger;
+            _repository = repository;
         }
 
         public async Task Handle(BlockPetition command, CancellationToken cancellationToken)
@@ -24,7 +26,7 @@ namespace VoiceMatters.Application.UseCases.Administration.Commands.Handlers
 
             petition.IsBlocked = true;
 
-            await _petitionRepository.UpdateAsync(petition);
+            await _repository.SaveChangesAsync();
             _logger.LogInformation($"Petition {petition.Id} is blocked.");
         }
     }

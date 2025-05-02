@@ -39,7 +39,6 @@ namespace VoiceMatters.Infrastructure.Services
 
             user.RoleId = role.Id;
 
-            _context.Users.Update(user);
             await _context.SaveChangesAsync();
         }
 
@@ -129,7 +128,6 @@ namespace VoiceMatters.Infrastructure.Services
             user.RefreshToken = refreshToken;
             user.RefreshTokenExpires = refreshTokenExpires;
 
-            _context.Users.Update(user);
             await _context.SaveChangesAsync();
         }
 

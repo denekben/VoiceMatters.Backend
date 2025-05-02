@@ -14,6 +14,16 @@ namespace VoiceMatters.Infrastructure.Repositories
             _context = context;
         }
 
+        public async Task AddAsync(Tag tag)
+        {
+            await _context.Tags.AddAsync(tag);
+        }
+
+        public async Task<Tag?> GetByNameNoTrackingAsync(string tagName)
+        {
+            return await _context.Tags.AsNoTracking().FirstOrDefaultAsync(t => t.Name == tagName);
+        }
+
         public async Task<Tag?> GetTagByNameAsync(string tagName)
         {
             return await _context.Tags.FirstOrDefaultAsync(t => t.Name == tagName);

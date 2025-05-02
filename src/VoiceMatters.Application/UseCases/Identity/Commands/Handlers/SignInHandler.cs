@@ -11,15 +11,15 @@ namespace VoiceMatters.Application.UseCases.Identity.Commands.Handlers
         private readonly IAuthService _authService;
         private readonly ITokenService _tokenService;
         private readonly ILogger<SignInHandler> _logger;
-        private readonly IRoleRepository _roleRepository;
+        private readonly IRepository _repository;
 
         public SignInHandler(IAuthService authService, ITokenService tokenService, ILogger<SignInHandler> logger,
-            IRoleRepository roleRepository)
+            IRepository repository)
         {
             _authService = authService;
             _tokenService = tokenService;
             _logger = logger;
-            _roleRepository = roleRepository;
+            _repository = repository;
         }
 
         public async Task<TokensDto?> Handle(SignIn command, CancellationToken cancellationToken)
@@ -33,10 +33,10 @@ namespace VoiceMatters.Application.UseCases.Identity.Commands.Handlers
 
             await _authService.UpdateRefreshToken(email, refreshToken);
 
-
             string accessToken = _tokenService.GenerateAccessToken(user.Id, user.LastName, email, user.Role.RoleName)
                 ?? throw new InvalidOperationException("Cannot create access token");
 
+            await _repository.SaveChangesAsync();
             _logger.LogInformation($"User {email} signed in");
             return new TokensDto(accessToken, refreshToken);
         }

@@ -5,7 +5,6 @@ using VoiceMatters.Domain.Repositories;
 using VoiceMatters.Shared.DTOs;
 using VoiceMatters.Shared.Exceptions;
 using VoiceMatters.Shared.Services;
-using DomainNews = VoiceMatters.Domain.Entities.News;
 
 namespace VoiceMatters.Application.UseCases.News.Commands.Handlers
 {
@@ -15,15 +14,17 @@ namespace VoiceMatters.Application.UseCases.News.Commands.Handlers
         private readonly IHttpContextService _contextService;
         private readonly IPetitionRepository _petitionRepository;
         private readonly INewsRepository _newsRepository;
+        private readonly IRepository _repository;
 
         public UpdateNewsHandler(ILogger<UpdateNewsHandler> logger,
             IHttpContextService contextService, IPetitionRepository petitionRepository,
-            INewsRepository newsRepository)
+            INewsRepository newsRepository, IRepository repository)
         {
             _logger = logger;
             _contextService = contextService;
             _petitionRepository = petitionRepository;
             _newsRepository = newsRepository;
+            _repository = repository;
         }
 
         public async Task<NewsDto?> Handle(UpdateNews command, CancellationToken cancellationToken)
@@ -39,14 +40,8 @@ namespace VoiceMatters.Application.UseCases.News.Commands.Handlers
             if (petition.CreatorId != creatorId)
                 throw new BadRequestException($"Only petition creator can update news for this petition");
 
-            var updatedNews = DomainNews.Create(command.Title, news.PetitionId)
-                ?? throw new BadRequestException($"Cannot update news {command.Id}");
-
-            news.Petition = petition;
-            news.Title = command.Title;
-
-            await _newsRepository.UpdateAsync(news);
-
+            news.UpdateDetails(command.Title, news.PetitionId);
+            await _repository.SaveChangesAsync();
             _logger.LogInformation($"News {command.Id} updated");
             return news.AsDto();
         }

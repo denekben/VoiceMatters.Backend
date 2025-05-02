@@ -12,15 +12,17 @@ namespace VoiceMatters.Application.UseCases.News.Commands.Handlers
         private readonly INewsRepository _newsRepository;
         private readonly IHttpContextService _contextService;
         private readonly IPetitionRepository _petitionRepository;
+        private readonly IRepository _repository;
 
         public DeleteNewsHandler(ILogger<DelegatingHandler> logger,
-            INewsRepository newsRepository, IHttpContextService contextService, 
-            IPetitionRepository petitionRepository)
+            INewsRepository newsRepository, IHttpContextService contextService,
+            IPetitionRepository petitionRepository, IRepository repository)
         {
             _logger = logger;
             _newsRepository = newsRepository;
             _contextService = contextService;
             _petitionRepository = petitionRepository;
+            _repository = repository;
         }
 
         public async Task Handle(DeleteNews command, CancellationToken cancellationToken)
@@ -37,6 +39,7 @@ namespace VoiceMatters.Application.UseCases.News.Commands.Handlers
                 throw new BadRequestException($"Only petition creator can delete news for this petition");
 
             await _newsRepository.DeleteAsync(news);
+            await _repository.SaveChangesAsync();
             _logger.LogInformation($"News {command.Id} deleted");
         }
     }

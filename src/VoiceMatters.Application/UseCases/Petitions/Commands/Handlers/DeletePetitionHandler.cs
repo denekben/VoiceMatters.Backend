@@ -16,10 +16,11 @@ namespace VoiceMatters.Application.UseCases.Petitions.Commands.Handlers
         private readonly IHttpContextService _contextService;
         private readonly IStatisticRepository _statisticRepository;
         private readonly INotificationService _notifications;
+        private readonly IRepository _repository;
 
         public DeletePetitionHandler(IPetitionRepository petitionRepository, ILogger<DeletePetitionHandler> logger,
             IImageService imageService, IHttpContextService contextService, IStatisticRepository statisticRepository,
-            INotificationService notifications)
+            INotificationService notifications, IRepository repository)
         {
             _petitionRepository = petitionRepository;
             _logger = logger;
@@ -27,6 +28,7 @@ namespace VoiceMatters.Application.UseCases.Petitions.Commands.Handlers
             _contextService = contextService;
             _statisticRepository = statisticRepository;
             _notifications = notifications;
+            _repository = repository;
         }
 
         public async Task Handle(DeletePetition command, CancellationToken cancellationToken)
@@ -44,7 +46,6 @@ namespace VoiceMatters.Application.UseCases.Petitions.Commands.Handlers
             {
                 stats.Update(StatParameter.PetitionQuantity, -1);
                 stats.Update(StatParameter.SignsQuantity, -1 * (int)petition.SignQuantity);
-                await _statisticRepository.UpdateAsync(stats);
                 await _notifications.PetitionDeleted((int)petition.SignQuantity);
             }
 
@@ -55,6 +56,9 @@ namespace VoiceMatters.Application.UseCases.Petitions.Commands.Handlers
             }
 
             await _petitionRepository.DeleteAsync(petition);
+
+            await _repository.SaveChangesAsync();
+
             _logger.LogInformation($"Petition {petition.Id} deleted");
         }
     }

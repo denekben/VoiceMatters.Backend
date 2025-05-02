@@ -7,6 +7,5 @@ namespace VoiceMatters.Domain.Repositories
         Task<News?> GetAsync(Guid id);
         Task AddAsync(News news);
         Task DeleteAsync(News news);
-        Task UpdateAsync(News news);
     }
 }

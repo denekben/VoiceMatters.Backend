@@ -6,6 +6,5 @@ namespace VoiceMatters.Domain.Repositories
     {
         Task<AppUser?> GetAsync(Guid id);
         Task<AppUser?> GetByEmailAsync(string email);
-        Task UpdateAsync(AppUser user);
     }
 }

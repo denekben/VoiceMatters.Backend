@@ -9,11 +9,14 @@ namespace VoiceMatters.Application.UseCases.Administration.Commands.Handlers
     {
         private readonly IAppUserRepository _userRepository;
         private readonly ILogger<BlockUserHandler> _logger;
+        private readonly IRepository _repository;
 
-        public BlockUserHandler(IAppUserRepository userRepository, ILogger<BlockUserHandler> logger)
+        public BlockUserHandler(IAppUserRepository userRepository, ILogger<BlockUserHandler> logger,
+            IRepository repository)
         {
             _userRepository = userRepository;
             _logger = logger;
+            _repository = repository;
         }
 
         public async Task Handle(BlockUser command, CancellationToken cancellationToken)
@@ -23,7 +26,7 @@ namespace VoiceMatters.Application.UseCases.Administration.Commands.Handlers
 
             user.IsBlocked = true;
 
-            await _userRepository.UpdateAsync(user);
+            await _repository.SaveChangesAsync();
             _logger.LogInformation($"User {command.Id} is blocked.");
         }
     }

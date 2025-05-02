@@ -21,11 +21,12 @@ namespace VoiceMatters.Application.UseCases.Petitions.Commands.Handlers
         private readonly IStatisticRepository _statisticRepository;
         private readonly INotificationService _notifications;
         private readonly IAppUserRepository _userRepository;
+        private readonly IRepository _repository;
 
         public CreatePetitionHandler(IPetitionRepository petitionRepository,
             ITagRepository tagRepository, ILogger<CreatePetitionHandler> logger
             , IImageService imageService, IHttpContextService contextService, IStatisticRepository statisticRepository,
-            INotificationService notifications, IAppUserRepository userRepository)
+            INotificationService notifications, IAppUserRepository userRepository, IRepository repository)
         {
             _petitionRepository = petitionRepository;
             _tagRepository = tagRepository;
@@ -35,6 +36,7 @@ namespace VoiceMatters.Application.UseCases.Petitions.Commands.Handlers
             _statisticRepository = statisticRepository;
             _notifications = notifications;
             _userRepository = userRepository;
+            _repository = repository;
         }
 
         public async Task<PetitionDto?> Handle(CreatePetition command, CancellationToken cancellationToken)
@@ -88,10 +90,11 @@ namespace VoiceMatters.Application.UseCases.Petitions.Commands.Handlers
             {
                 stats.Update(StatParameter.PetitionQuantity);
                 stats.Update(StatParameter.SignsQuantity);
-                await _statisticRepository.UpdateAsync(stats);
                 await _notifications.PetitionCreated();
                 await _notifications.PetitionSigned();
             }
+
+            await _repository.SaveChangesAsync();
 
             return petition.AsDto(true);
         }

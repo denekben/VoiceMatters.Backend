@@ -17,25 +17,16 @@ namespace VoiceMatters.Infrastructure.Repositories
         public async Task AddAsync(News news)
         {
             await _context.News.AddAsync(news);
-            await _context.SaveChangesAsync();
         }
 
         public async Task DeleteAsync(News news)
         {
-            _context.News.Remove(news);
-            await _context.SaveChangesAsync();
+            await _context.News.Where(n => n.Id == news.Id).ExecuteDeleteAsync();
         }
 
         public async Task<News?> GetAsync(Guid id)
         {
             return await _context.News.FirstOrDefaultAsync(n => n.Id == id);
-        }
-
-        public async Task UpdateAsync(News news)
-        {
-            news.UpdatedDate = DateTime.UtcNow;
-            _context.News.Update(news);
-            await _context.SaveChangesAsync();
         }
     }
 }

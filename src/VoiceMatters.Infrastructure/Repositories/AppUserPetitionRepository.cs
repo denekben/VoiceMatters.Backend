@@ -17,12 +17,11 @@ namespace VoiceMatters.Infrastructure.Repositories
         public async Task AddAsync(AppUserSignedPetition userSignedPetition)
         {
             await _context.AppUserSignedPetitions.AddAsync(userSignedPetition);
-            await _context.SaveChangesAsync();
         }
 
         public async Task<AppUserSignedPetition?> GetAsync(Guid petitionId, Guid signerId)
         {
-            return await _context.AppUserSignedPetitions.FirstOrDefaultAsync(up=>(up.PetitionId == petitionId && up.SignerId == signerId));
+            return await _context.AppUserSignedPetitions.FirstOrDefaultAsync(up => (up.PetitionId == petitionId && up.SignerId == signerId));
         }
     }
 }

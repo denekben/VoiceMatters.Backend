@@ -17,13 +17,11 @@ namespace VoiceMatters.Infrastructure.Repositories
         public async Task AddAsync(Petition petition)
         {
             await _context.Petitions.AddAsync(petition);
-            await _context.SaveChangesAsync();
         }
 
         public async Task DeleteAsync(Petition petition)
         {
-            _context.Petitions.Remove(petition);
-            await _context.SaveChangesAsync();
+            await _context.Petitions.Where(p => p.Id == petition.Id).ExecuteDeleteAsync();
         }
 
         public async Task<Petition?> GetAsync(Guid id)
@@ -44,13 +42,6 @@ namespace VoiceMatters.Infrastructure.Repositories
                 query = query.Include(p => p.Images);
 
             return await query.FirstOrDefaultAsync();
-        }
-
-        public async Task UpdateAsync(Petition petition)
-        {
-            petition.UpdatedDate = DateTime.UtcNow;
-            _context.Petitions.Update(petition);
-            await _context.SaveChangesAsync();
         }
     }
 }

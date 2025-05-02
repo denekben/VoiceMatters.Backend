@@ -23,12 +23,5 @@ namespace VoiceMatters.Infrastructure.Repositories
         {
             return await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
         }
-
-        public async Task UpdateAsync(AppUser user)
-        {
-            user.UpdatedDate = DateTime.UtcNow;
-            _context.Users.Update(user);
-            await _context.SaveChangesAsync();
-        }
     }
 }

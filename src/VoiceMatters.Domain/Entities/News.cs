@@ -53,5 +53,14 @@ namespace VoiceMatters.Domain.Entities
 
             return new(id, title, petitionId);
         }
+
+        public void UpdateDetails(string title, Guid petitionId)
+        {
+            if (string.IsNullOrWhiteSpace(title) || title.Length < _minTitleLength || title.Length > _maxTitleLength)
+                throw new InvalidArgumentDomainException($"Invalid argument for News[title]. Entered value: {title}");
+
+            Title = title;
+            PetitionId = petitionId;
+        }
     }
 }

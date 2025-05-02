@@ -17,10 +17,11 @@ namespace VoiceMatters.Application.UseCases.Identity.Commands.Handlers
         private readonly IImageService _imageService;
         private readonly IStatisticRepository _statisticRepository;
         private readonly INotificationService _notifications;
+        private readonly IRepository _repository;
 
         public RegisterNewUserHandler(IAuthService authService, ILogger<RegisterNewUserHandler> logger, ITokenService tokenService,
             IRoleRepository roleRepository, IImageService imageService, IStatisticRepository statisticRepository
-            , INotificationService notifications)
+            , INotificationService notifications, IRepository repository)
         {
             _authService = authService;
             _logger = logger;
@@ -29,6 +30,7 @@ namespace VoiceMatters.Application.UseCases.Identity.Commands.Handlers
             _imageService = imageService;
             _statisticRepository = statisticRepository;
             _notifications = notifications;
+            _repository = repository;
         }
 
         public async Task<TokensDto?> Handle(RegisterNewUser command, CancellationToken cancellationToken)
@@ -58,10 +60,10 @@ namespace VoiceMatters.Application.UseCases.Identity.Commands.Handlers
             if (stats != null)
             {
                 stats.Update(StatParameter.UserQuantity);
-                await _statisticRepository.UpdateAsync(stats);
                 await _notifications.UserRegistered();
             }
 
+            await _repository.SaveChangesAsync();
             _logger.LogInformation($"User {email} registered");
             return new TokensDto(accessToken, refreshToken);
         }

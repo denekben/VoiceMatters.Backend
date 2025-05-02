@@ -28,6 +28,29 @@ namespace VoiceMatters.Application.Mappers
             );
         }
 
+        public static PetitionDto AsDto(this Petition petition, bool signedByCurrentUser, List<Tag> inputTags, List<Image> inputImages)
+        {
+            var tags = (inputTags ?? []).Select(t => t.AsDto()).ToList();
+            var images = (inputImages ?? []).Select(i => i.AsDto()).ToList();
+
+            return new(
+                petition.Id,
+                petition.Title,
+                petition.TextPayload,
+                petition.SignQuantity,
+                petition.SignQuantityPerDay,
+                petition.IsCompleted,
+                petition.IsBlocked,
+                signedByCurrentUser,
+                tags,
+                images,
+                petition.News?.Title,
+                petition.Creator.AsProfilePlateDto(),
+                petition.CreatedDate,
+                petition.UpdatedDate
+            );
+        }
+
         public static ImageDto AsDto(this Image image)
         {
             return new(image.Id, image.Uuid, image.Caption, image.Order);

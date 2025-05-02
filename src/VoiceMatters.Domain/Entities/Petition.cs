@@ -66,15 +66,18 @@ namespace VoiceMatters.Domain.Entities
             return new(title, textPayload, creatorId);
         }
 
-        public static Petition Create(Guid id, string title, string textPayload, Guid creatorId)
+        public void UpdateDetails(string title, string textPayload, Guid creatorId)
         {
-            if (id == Guid.Empty)
-                throw new InvalidArgumentDomainException($"Invalid argument for Petition[id]. Entered value: {id}");
             if (string.IsNullOrWhiteSpace(title) || title.Length < _minTitleLength || title.Length > _maxTitleLength)
                 throw new InvalidArgumentDomainException($"Invalid argument for Petition[title]. Entered value: {title}");
             if (string.IsNullOrWhiteSpace(textPayload) || textPayload.Length < _minTextPayloadLength || textPayload.Length > _maxTextPayloadLength)
                 throw new InvalidArgumentDomainException($"Invalid argument for Petition[textPayload]. Entered value: {textPayload}");
-            return new(id, title, textPayload, creatorId);
+            if (creatorId == Guid.Empty)
+                throw new InvalidArgumentDomainException($"Invalid argument for Petition[creatorId]. Entered value: {creatorId}");
+
+            Title = title;
+            TextPayload = textPayload;
+            CreatorId = creatorId;
         }
     }
 }

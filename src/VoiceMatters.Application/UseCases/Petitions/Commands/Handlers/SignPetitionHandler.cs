@@ -17,10 +17,11 @@ namespace VoiceMatters.Application.UseCases.Petitions.Commands.Handlers
         private readonly IHttpContextService _contextService;
         private readonly IStatisticRepository _statisticRepository;
         private readonly INotificationService _notifications;
+        private readonly IRepository _repository;
 
         public SignPetitionHandler(IAppUserPetitionRepository userPetitionRepository, ILogger<SignPetitionHandler> logger
             , IHttpContextService contextService, IPetitionRepository petitionRepository, IStatisticRepository statisticRepository
-            , INotificationService notifications)
+            , INotificationService notifications, IRepository repository)
         {
             _userPetitionRepository = userPetitionRepository;
             _logger = logger;
@@ -28,6 +29,7 @@ namespace VoiceMatters.Application.UseCases.Petitions.Commands.Handlers
             _petitionRepository = petitionRepository;
             _statisticRepository = statisticRepository;
             _notifications = notifications;
+            _repository = repository;
         }
 
         public async Task Handle(SignPetition command, CancellationToken cancellationToken)
@@ -52,12 +54,13 @@ namespace VoiceMatters.Application.UseCases.Petitions.Commands.Handlers
             if (stats != null)
             {
                 stats.Update(StatParameter.SignsQuantity);
-                await _statisticRepository.UpdateAsync(stats);
                 await _notifications.PetitionSigned();
             }
 
             await _userPetitionRepository.AddAsync(sign);
-            await _petitionRepository.UpdateAsync(petition);
+
+            await _repository.SaveChangesAsync();
+
             _logger.LogInformation("Petition signed");
         }
     }

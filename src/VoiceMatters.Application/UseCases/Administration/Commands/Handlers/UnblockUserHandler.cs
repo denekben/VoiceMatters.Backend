@@ -9,11 +9,14 @@ namespace VoiceMatters.Application.UseCases.Administration.Commands.Handlers
     {
         private readonly IAppUserRepository _userRepository;
         private readonly ILogger<UnblockUserHandler> _logger;
+        private readonly IRepository _repository;
 
-        public UnblockUserHandler(IAppUserRepository userRepository, ILogger<UnblockUserHandler> logger)
+        public UnblockUserHandler(IAppUserRepository userRepository, ILogger<UnblockUserHandler> logger,
+            IRepository repository)
         {
             _userRepository = userRepository;
             _logger = logger;
+            _repository = repository;
         }
 
         public async Task Handle(UnblockUser command, CancellationToken cancellationToken)
@@ -23,7 +26,7 @@ namespace VoiceMatters.Application.UseCases.Administration.Commands.Handlers
 
             user.IsBlocked = false;
 
-            await _userRepository.UpdateAsync(user);
+            await _repository.SaveChangesAsync();
             _logger.LogInformation($"User {command.Id} is unblocked.");
         }
     }
