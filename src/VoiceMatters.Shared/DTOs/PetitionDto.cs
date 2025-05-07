@@ -11,6 +11,7 @@
         bool SignedByCurrentUser,
         List<TagDto>? Tags,
         List<ImageDto>? Images,
+        Guid? NewsId,
         string? NewsTitle,
         ProfilePlateDto? Creator,
         DateTime CreatedDate,
