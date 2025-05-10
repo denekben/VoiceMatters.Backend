@@ -37,6 +37,9 @@ namespace VoiceMatters.Application.UseCases.Petitions.Commands.Handlers
             var petition = await _petitionRepository.GetAsync(command.Id)
                 ?? throw new BadRequestException($"Cannot find petition {command.Id}");
 
+            if (petition.IsCompleted)
+                throw new BadRequestException($"Petition {command.Id} is completed");
+
             petition.SignQuantityPerDay += 1;
             petition.SignQuantity += 1;
 
