@@ -83,7 +83,7 @@ namespace VoiceMatters.Infrastructure.Queries.Petitions
             if (currentUser?.Role.RoleName != Role.Admin.RoleName || !query.AllowBlocked)
                 userPetitions = userPetitions.Where(p => !p.IsBlocked);
 
-            userPetitions.Include(p => p.Images).Include(p => p.PetitionTags).ThenInclude(pt => pt.Tag).Include(p => p.Creator).Include(p => p.News);
+            userPetitions = userPetitions.Include(p => p.Images).Include(p => p.PetitionTags).ThenInclude(pt => pt.Tag).Include(p => p.Creator).Include(p => p.News);
 
             int skipNumber = (query.PageNumber - 1) * query.PageSize;
             userPetitions = userPetitions.Skip(skipNumber).Take(query.PageSize);
