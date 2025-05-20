@@ -35,7 +35,7 @@ namespace VoiceMatters.Infrastructure.Queries.Users
                 currentUser = await _context.Users.AsNoTracking().Include(u => u.Role).FirstOrDefaultAsync(u => u.Id == userId);
             }
 
-            var users = _context.Users.AsNoTracking()
+            var users = _context.Users.AsNoTracking().Include(u => u.Role)
                 .Where(u => (
                 EF.Functions.ILike(u.FirstName + " " + u.LastName, $"%{query.SearchPhrase ?? string.Empty}%") ||
                 EF.Functions.ILike(u.LastName + " " + u.FirstName, $"%{query.SearchPhrase ?? string.Empty}%")));

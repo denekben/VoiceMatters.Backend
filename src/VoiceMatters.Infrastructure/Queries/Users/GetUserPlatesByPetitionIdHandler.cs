@@ -35,7 +35,7 @@ namespace VoiceMatters.Infrastructure.Queries.Users
                 currentUser = await _context.Users.AsNoTracking().Include(u => u.Role).FirstOrDefaultAsync(u => u.Id == userId);
             }
 
-            var users = _context.Users.AsNoTracking().Include(u => u.PetitionsSignedByUser)
+            var users = _context.Users.AsNoTracking().Include(u => u.PetitionsSignedByUser).Include(u => u.Role)
                 .Where(u => u.PetitionsSignedByUser.Any(p => p.PetitionId == query.PetitionId));
 
             if (currentUser?.Role.RoleName != Role.Admin.RoleName || !query.AllowBlocked)
