@@ -63,18 +63,21 @@ namespace VoiceMatters.Application.UseCases.Petitions.Commands.Handlers
 
             await _petitionTagRepository.DeleteByPetitionIdAsync(id);
 
-            var inputTag = new List<Tag>();
-            foreach (var tagName in tagNames)
+            if (tagNames != null)
             {
-                var tag = await _tagRepository.GetByNameNoTrackingAsync(tagName);
-                if (tag == null)
+                var inputTag = new List<Tag>();
+                foreach (var tagName in tagNames)
                 {
-                    tag = Tag.Create(tagName);
-                    await _tagRepository.AddAsync(tag);
+                    var tag = await _tagRepository.GetByNameNoTrackingAsync(tagName);
+                    if (tag == null)
+                    {
+                        tag = Tag.Create(tagName);
+                        await _tagRepository.AddAsync(tag);
+                    }
+                    inputTag.Add(tag);
+                    var petitionTag = PetitionTag.Create(id, tag.Id);
+                    await _petitionTagRepository.AddAsync(petitionTag);
                 }
-                inputTag.Add(tag);
-                var petitionTag = PetitionTag.Create(id, tag.Id);
-                await _petitionTagRepository.AddAsync(petitionTag);
             }
 
             //updating images fields

@@ -7,7 +7,7 @@ namespace VoiceMatters.Application.UseCases.Petitions.Commands
         Guid Id,
         string Title,
         string TextPayload,
-        List<string> Tags,
+        List<string>? Tags,
         List<UpdateImageDto> Images
         ) : IRequest<PetitionDto?>;
 }
