@@ -6,7 +6,7 @@ namespace VoiceMatters.Application.UseCases.Petitions.Commands
     public sealed record CreatePetition(
         string Title,
         string TextPayload,
-        List<string> Tags,
+        List<string>? Tags,
         List<CreateImageDto> Images
         ) : IRequest<PetitionDto?>;
 }

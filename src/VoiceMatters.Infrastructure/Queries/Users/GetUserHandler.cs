@@ -38,7 +38,7 @@ namespace VoiceMatters.Infrastructure.Queries.Users
             if (currentUser?.Role.RoleName != Role.Admin.RoleName || !query.AllowBlocked)
                 users = users.Where(u => !u.IsBlocked);
 
-            var userEntities = await users.Include(u => u.PetitionsCreatedByUser).Include(u => u.PetitionsSignedByUser).FirstOrDefaultAsync();
+            var userEntities = await users.Include(u => u.PetitionsCreatedByUser).Include(u => u.PetitionsSignedByUser).Include(u => u.Role).FirstOrDefaultAsync();
 
             return (userEntities?.AsProfileDto());
         }

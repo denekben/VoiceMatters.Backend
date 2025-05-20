@@ -24,9 +24,10 @@ namespace VoiceMatters.Infrastructure.Queries.Users
             var userId = _contextService.GetCurrentUserId();
 
             return (await _context.Users.AsNoTracking()
-                .Include(u=>u.PetitionsCreatedByUser)
-                .Include(u=>u.PetitionsSignedByUser)
-                .FirstOrDefaultAsync(u=>u.Id == userId))
+                .Include(u => u.Role)
+                .Include(u => u.PetitionsCreatedByUser)
+                .Include(u => u.PetitionsSignedByUser)
+                .FirstOrDefaultAsync(u => u.Id == userId))
                 ?.AsProfileDto();
         }
     }

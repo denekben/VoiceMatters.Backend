@@ -13,6 +13,7 @@
         bool IsBlocked,
         int PetitionsCreated,
         int PetitionsSigned,
+        RoleDto? Role,
         DateTime CreatedDate
     );
 }

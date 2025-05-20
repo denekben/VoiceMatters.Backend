@@ -6,6 +6,7 @@
         string LastName,
         string? Sex,
         string? ImageUuid,
-        bool IsBlocked
+        bool IsBlocked,
+        RoleDto? Role
     );
 }

@@ -51,19 +51,22 @@ namespace VoiceMatters.Application.UseCases.Petitions.Commands.Handlers
             var petition = Petition.Create(title, textPayload, creatorId)
                 ?? throw new BadRequestException("Cannot create petition");
 
-            foreach (var tagName in tags)
+            if (tags != null)
             {
-                var tag = await _tagRepository.GetTagByNameAsync(tagName);
-                if (tag == null)
+                foreach (var tagName in tags)
                 {
-                    tag = Tag.Create(tagName)
-                        ?? throw new BadRequestException($"Cannot create tag {tagName}");
-                }
+                    var tag = await _tagRepository.GetTagByNameAsync(tagName);
+                    if (tag == null)
+                    {
+                        tag = Tag.Create(tagName)
+                            ?? throw new BadRequestException($"Cannot create tag {tagName}");
+                    }
 
-                var petitionTag = PetitionTag.Create(petition.Id, tag.Id)
-                    ?? throw new BadRequestException("Cannot create PetitionTag");
-                petitionTag.Tag = tag;
-                petition.PetitionTags.Add(petitionTag);
+                    var petitionTag = PetitionTag.Create(petition.Id, tag.Id)
+                        ?? throw new BadRequestException("Cannot create PetitionTag");
+                    petitionTag.Tag = tag;
+                    petition.PetitionTags.Add(petitionTag);
+                }
             }
 
             foreach (var image in images)

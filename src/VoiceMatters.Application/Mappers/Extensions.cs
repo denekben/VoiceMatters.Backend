@@ -80,6 +80,11 @@ namespace VoiceMatters.Application.Mappers
             );
         }
 
+        public static RoleDto AsDto(this Role role)
+        {
+            return new(role.Id, role.RoleName);
+        }
+
         public static ProfileDto AsProfileDto(this AppUser user)
         {
 
@@ -95,6 +100,7 @@ namespace VoiceMatters.Application.Mappers
                 user.IsBlocked,
                 user.PetitionsCreatedByUser.Count,
                 user.PetitionsSignedByUser.Count,
+                user.Role?.AsDto(),
                 user.CreatedDate
             );
         }
@@ -107,7 +113,8 @@ namespace VoiceMatters.Application.Mappers
                 user.LastName,
                 user.Sex,
                 user.ImageUuid,
-                user.IsBlocked
+                user.IsBlocked,
+                user.Role?.AsDto()
             );
         }
     }
