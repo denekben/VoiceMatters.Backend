@@ -71,9 +71,9 @@ namespace VoiceMatters.WebUI.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<PetitionDto?>> GetPetition([FromRoute] Guid id)
+        public async Task<ActionResult<PetitionDto?>> GetPetition([FromRoute] Guid id, [FromQuery] bool allowBlocked)
         {
-            var result = await _sender.Send(new GetPetition(id));
+            var result = await _sender.Send(new GetPetition(id, allowBlocked));
             if (result == null)
                 return NotFound();
             return Ok(result);
