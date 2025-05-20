@@ -29,9 +29,9 @@ namespace VoiceMatters.WebUI.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<ProfileDto?>> GetUser([FromRoute] Guid id)
+        public async Task<ActionResult<ProfileDto?>> GetUser([FromRoute] Guid id, [FromQuery] bool allowBlocked)
         {
-            var profile = await _sender.Send(new GetUser(id));
+            var profile = await _sender.Send(new GetUser(id, allowBlocked));
             if (profile == null)
                 return NotFound();
             return Ok(profile);
