@@ -63,9 +63,9 @@ namespace VoiceMatters.Application.UseCases.Petitions.Commands.Handlers
 
             await _petitionTagRepository.DeleteByPetitionIdAsync(id);
 
+            var inputTag = new List<Tag>();
             if (tagNames != null)
             {
-                var inputTag = new List<Tag>();
                 foreach (var tagName in tagNames)
                 {
                     var tag = await _tagRepository.GetByNameNoTrackingAsync(tagName);
