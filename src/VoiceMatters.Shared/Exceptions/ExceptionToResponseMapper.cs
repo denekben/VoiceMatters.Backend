@@ -13,19 +13,13 @@ namespace Shared.Exceptions
         {
             if (exception is VoiceMattersException ex)
             {
-                if (ex.Errors.Count > 0)
+                if (exception is BadRequestException)
                 {
-                    var errors = new List<Error>();
-
-                    foreach (var kvp in ex.Errors)
-                    {
-                        foreach (var errorMessage in kvp.Value)
-                        {
-                            errors.Add(new Error(GetErrorCode(ex), errorMessage));
-                        }
-                    }
-
-                    return new ExceptionResponse(new ErrorsResponse(errors.ToArray()), HttpStatusCode.BadRequest);
+                    return new ExceptionResponse(new ErrorsResponse(new Error(GetErrorCode(ex), ex.Message)), HttpStatusCode.BadRequest);
+                }
+                else if (exception is AuthorizationException)
+                {
+                    return new ExceptionResponse(new ErrorsResponse(new Error(GetErrorCode(ex), ex.Message)), HttpStatusCode.Forbidden);
                 }
                 else
                 {
@@ -35,7 +29,6 @@ namespace Shared.Exceptions
             else
             {
                 throw exception;
-                // return new ExceptionResponse(new ErrorsResponse(new Error("error", "There was an error.")), HttpStatusCode.publicServerError);
             }
         }
 

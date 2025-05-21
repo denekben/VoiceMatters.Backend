@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
+using VoiceMatters.Shared.Exceptions;
 
 namespace VoiceMatters.Shared.Services
 {
@@ -15,11 +16,11 @@ namespace VoiceMatters.Shared.Services
         public Guid GetCurrentUserId()
         {
             var userIdString = _contextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value
-                ?? throw new InvalidOperationException("Cannot find user");
+                ?? throw new AuthorizationException("Cannot find user");
 
             if (!Guid.TryParse(userIdString, out var userId))
             {
-                throw new InvalidOperationException("User ID is not a valid guid");
+                throw new AuthorizationException("User ID is not a valid guid");
             }
 
             return userId;
@@ -28,7 +29,7 @@ namespace VoiceMatters.Shared.Services
         public string GetCurrentUserRoleName()
         {
             var roleName = _contextAccessor.HttpContext?.User.FindFirst(ClaimTypes.Role)?.Value
-                ?? throw new InvalidOperationException("Cannot find user's role");
+                ?? throw new AuthorizationException("Cannot find user's role");
 
             return roleName;
         }

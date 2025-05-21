@@ -28,14 +28,14 @@ namespace VoiceMatters.Application.UseCases.Identity.Commands.Handlers
             var userId = GetCurrentUserId();
 
             var user = await _userRepository.GetAsync(userId, UserIncludes.Role)
-                ?? throw new BadRequestException($"Cannot find user {userId}");
+                ?? throw new AuthorizationException($"Cannot find user {userId}");
 
             if (user.RefreshTokenExpires < DateTime.UtcNow)
-                throw new BadRequestException("Refresh token expired");
+                throw new AuthorizationException("Refresh token expired");
             var decodedRefreshToken = Uri.UnescapeDataString(command.RefreshToken)
                 .Replace(" ", "+");
             if (user.RefreshToken != decodedRefreshToken)
-                throw new BadRequestException("Incorrect refresh token");
+                throw new AuthorizationException("Incorrect refresh token");
 
             var token = _tokenService.GenerateAccessToken(user.Id, user.LastName, user.Email, user.Role.RoleName);
 
@@ -59,11 +59,11 @@ namespace VoiceMatters.Application.UseCases.Identity.Commands.Handlers
                 }
             }
             var userIdString = _contextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value
-                ?? throw new BadRequestException("Cannot find user");
+                ?? throw new AuthorizationException("Cannot find user");
 
             if (!Guid.TryParse(userIdString, out var userId))
             {
-                throw new BadRequestException("User ID is not a valid guid");
+                throw new AuthorizationException("User ID is not a valid guid");
             }
 
             return userId;
