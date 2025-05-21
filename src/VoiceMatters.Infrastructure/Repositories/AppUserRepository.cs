@@ -19,6 +19,15 @@ namespace VoiceMatters.Infrastructure.Repositories
             return await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
         }
 
+        public async Task<AppUser?> GetAsync(Guid id, UserIncludes includes)
+        {
+            var query = _context.Users.Where(u => u.Id == id);
+            if (includes.HasFlag(UserIncludes.Role))
+                query = query.Include(u => u.Role);
+
+            return await query.FirstOrDefaultAsync();
+        }
+
         public async Task<AppUser?> GetByEmailAsync(string email)
         {
             return await _context.Users.FirstOrDefaultAsync(u => u.Email == email);

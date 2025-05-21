@@ -1,46 +1,72 @@
 ﻿using MediatR;
-using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Http;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using VoiceMatters.Application.Services;
 using VoiceMatters.Domain.Repositories;
+using VoiceMatters.Shared.Exceptions;
 
 namespace VoiceMatters.Application.UseCases.Identity.Commands.Handlers
 {
     public sealed class RefreshExpiredTokenHandler : IRequestHandler<RefreshExpiredToken, string?>
     {
+        private readonly IAppUserRepository _userRepository;
         private readonly ITokenService _tokenService;
-        private readonly IAuthService _authService;
-        private readonly ILogger<RefreshExpiredTokenHandler> _logger;
-        private readonly IRoleRepository _roleRepository;
+        private readonly IHttpContextAccessor _contextAccessor;
 
-        public RefreshExpiredTokenHandler(IAuthService authService, ITokenService tokenService, ILogger<RefreshExpiredTokenHandler> logger,
-            IRoleRepository roleRepository)
+        public RefreshExpiredTokenHandler(
+            IAppUserRepository userRepository, ITokenService tokenService,
+            IHttpContextAccessor contextAccessor)
         {
-            _authService = authService;
+            _userRepository = userRepository;
             _tokenService = tokenService;
-            _logger = logger;
-            _roleRepository = roleRepository;
+            _contextAccessor = contextAccessor;
         }
 
         public async Task<string?> Handle(RefreshExpiredToken command, CancellationToken cancellationToken)
         {
-            var email = _tokenService.GetPrincipalFromExpiredToken(command.AccessToken)
-                ?.Claims.SingleOrDefault(x => x.Type.Equals(ClaimTypes.Email))?.Value ??
-                throw new InvalidOperationException("Cannot refresh token");
+            var userId = GetCurrentUserId();
 
-            if (!await _authService.IsRefreshTokenValid(email, command.RefreshToken))
+            var user = await _userRepository.GetAsync(userId, UserIncludes.Role)
+                ?? throw new BadRequestException($"Cannot find user {userId}");
+
+            if (user.RefreshTokenExpires < DateTime.UtcNow)
+                throw new BadRequestException("Refresh token expired");
+            var decodedRefreshToken = Uri.UnescapeDataString(command.RefreshToken)
+                .Replace(" ", "+");
+            if (user.RefreshToken != decodedRefreshToken)
+                throw new BadRequestException("Incorrect refresh token");
+
+            var token = _tokenService.GenerateAccessToken(user.Id, user.LastName, user.Email, user.Role.RoleName);
+
+            return token;
+        }
+
+        public Guid GetCurrentUserId()
+        {
+            var authHeader = _contextAccessor.HttpContext.Request.Headers["Authorization"].FirstOrDefault();
+            if (authHeader != null && authHeader.StartsWith("Bearer "))
             {
-                throw new InvalidOperationException("Refresh token is invalid");
+                var token = authHeader.Substring("Bearer ".Length).Trim();
+                var handler = new JwtSecurityTokenHandler();
+
+                var jwtToken = handler.ReadJwtToken(token);
+                var userIdClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == "nameid")?.Value;
+
+                if (userIdClaim != null)
+                {
+                    return Guid.Parse(userIdClaim);
+                }
+            }
+            var userIdString = _contextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+                ?? throw new BadRequestException("Cannot find user");
+
+            if (!Guid.TryParse(userIdString, out var userId))
+            {
+                throw new BadRequestException("User ID is not a valid guid");
             }
 
-            var user = await _authService.GetUserByEmailAsync(email);
-
-            string accessToken = _tokenService.GenerateAccessToken(user.Id, user.LastName, email, user.Role.RoleName)
-                ?? throw new InvalidOperationException("Cannot create access token");
-
-            _logger.LogInformation($"User {user.Id} refreshed expired token");
-
-            return accessToken;
+            return userId;
         }
     }
 }
