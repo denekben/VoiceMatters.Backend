@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
@@ -46,6 +47,7 @@ namespace VoiceMatters.Infrastructure
 
             services.AddDbContext<AppDbContext>(
                 options => options.UseNpgsql(configuration["ConnectionString:DefaultConntection"])
+                .ConfigureWarnings(w => w.Ignore(RelationalEventId.PendingModelChangesWarning))
             );
             AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 

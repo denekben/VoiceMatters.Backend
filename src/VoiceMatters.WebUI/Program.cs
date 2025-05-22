@@ -1,6 +1,7 @@
 using Microsoft.OpenApi.Models;
 using VoiceMatters.Application;
 using VoiceMatters.Infrastructure;
+using VoiceMatters.Infrastructure.Data;
 using VoiceMatters.Shared;
 using VoiceMatters.WebUI.Policies;
 
@@ -14,17 +15,6 @@ builder.Services.AddPolicies();
 builder.Services.AddControllers();
 
 builder.Services.AddEndpointsApiExplorer();
-
-builder.Services.AddCors(options =>
-{
-    options.AddDefaultPolicy(builder =>
-    {
-        builder.WithOrigins("http://localhost:3000", "https://localhost:3000") // ”кажите допустимые источники
-               .AllowAnyHeader()
-               .AllowAnyMethod()
-               .AllowCredentials();
-    });
-});
 
 builder.Services.AddSwaggerGen(options =>
 {
@@ -53,10 +43,27 @@ builder.Services.AddSwaggerGen(options =>
                 });
 });
 
+var allowedOrigins = builder.Configuration.GetSection("CORS").Get<string[]>();
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policyBuilder =>
+    {
+        policyBuilder.WithOrigins(allowedOrigins)
+                     .AllowAnyHeader()
+                     .AllowAnyMethod()
+                     .AllowCredentials();
+    });
+});
+
 var app = builder.Build();
 
 app.UseShared();
 app.UseInfrastructure();
+
+if (app.Environment.IsProduction())
+{
+    await PrepDb.ApplyMigrationsAsync<AppDbContext>(app.Services);
+}
 
 if (app.Environment.IsDevelopment())
 {

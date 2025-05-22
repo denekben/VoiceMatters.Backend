@@ -233,15 +233,15 @@ namespace VoiceMatters.Infrastructure.Migrations
                 columns: new[] { "Id", "CreatedDate", "RoleName", "UpdatedDate" },
                 values: new object[,]
                 {
-                    { new Guid("8b2a0625-eaa7-4b6c-b3db-e0ed0e2d3eae"), new DateTime(2025, 3, 13, 23, 23, 56, 549, DateTimeKind.Utc).AddTicks(7110), "Admin", null },
-                    { new Guid("f180d00d-8663-476b-b3e2-fd7b52e49c1c"), new DateTime(2025, 3, 13, 23, 23, 56, 549, DateTimeKind.Utc).AddTicks(7488), "User", null }
+                    { new Guid("cf27880a-14ef-4013-9955-12356f97f927"), new DateTime(2025, 5, 22, 12, 15, 25, 534, DateTimeKind.Utc).AddTicks(4183), "User", null },
+                    { new Guid("d539b807-c559-4ad9-be9a-897bf38e543a"), new DateTime(2025, 5, 22, 12, 15, 25, 534, DateTimeKind.Utc).AddTicks(2940), "Admin", null }
                 });
 
             migrationBuilder.InsertData(
                 schema: "VoiceMatters",
                 table: "Statistics",
                 columns: new[] { "Id", "PetitionQuantity", "SignsQuantity", "UserQuantity" },
-                values: new object[] { new Guid("776845be-ce6b-45ef-9be8-c2b4c8807a2f"), 0, 0, 0 });
+                values: new object[] { new Guid("19e03bf6-4bd8-4ecd-8aa8-819167715efd"), 0, 0, 0 });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AppUserSignedPetitions_SignerId",

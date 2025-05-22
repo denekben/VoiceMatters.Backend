@@ -12,7 +12,7 @@ using VoiceMatters.Infrastructure.Data;
 namespace VoiceMatters.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250313232357_Init")]
+    [Migration("20250522121526_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -251,14 +251,14 @@ namespace VoiceMatters.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("8b2a0625-eaa7-4b6c-b3db-e0ed0e2d3eae"),
-                            CreatedDate = new DateTime(2025, 3, 13, 23, 23, 56, 549, DateTimeKind.Utc).AddTicks(7110),
+                            Id = new Guid("d539b807-c559-4ad9-be9a-897bf38e543a"),
+                            CreatedDate = new DateTime(2025, 5, 22, 12, 15, 25, 534, DateTimeKind.Utc).AddTicks(2940),
                             RoleName = "Admin"
                         },
                         new
                         {
-                            Id = new Guid("f180d00d-8663-476b-b3e2-fd7b52e49c1c"),
-                            CreatedDate = new DateTime(2025, 3, 13, 23, 23, 56, 549, DateTimeKind.Utc).AddTicks(7488),
+                            Id = new Guid("cf27880a-14ef-4013-9955-12356f97f927"),
+                            CreatedDate = new DateTime(2025, 5, 22, 12, 15, 25, 534, DateTimeKind.Utc).AddTicks(4183),
                             RoleName = "User"
                         });
                 });
@@ -285,7 +285,7 @@ namespace VoiceMatters.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("776845be-ce6b-45ef-9be8-c2b4c8807a2f"),
+                            Id = new Guid("19e03bf6-4bd8-4ecd-8aa8-819167715efd"),
                             PetitionQuantity = 0,
                             SignsQuantity = 0,
                             UserQuantity = 0
